@@ -42,9 +42,45 @@ function ding_item_viewer_permission() {
 function ding_item_viewer_theme($existing, $type, $theme, $path) {
   $hooks = array();
 
+  $hooks['viewer_content'] = array(
+    'variables' => array(),
+    'template' => 'ding_item_viewer.content',
+    'path' => $path . '/templates',
+  );
+
   $hooks['ding_item_viewer_admin_form'] = array(
     'render element' => 'form',
   );
 
   return $hooks;
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function ding_item_viewer_block_info() {
+  $blocks = array();
+
+  $blocks['item_viewer'] = array(
+    'info' => t('Ding item viewer')
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function ding_item_viewer_block_view($delta) {
+  $block = array();
+  $block['content'] = '';
+
+  switch ($delta) {
+    case 'item_viewer':
+
+      $block['content'] = theme('viewer_content');
+      break;
+  }
+
+  return $block;
 }
