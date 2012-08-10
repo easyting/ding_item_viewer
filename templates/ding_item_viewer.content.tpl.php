@@ -37,7 +37,7 @@
       <div class="cover-wrapper">
         <img src="" class="image" alt="" />
         <div class="reserve-container">
-          <span class="reserve-label"></span>
+          <span class="reserve-label"><?php print t('Reserve here'); ?></span>
           <div class="item-loan">
             
           </div>
@@ -47,7 +47,7 @@
         <h2 class="active-title"></h2>
         <span class="active-author"></span>
         <span class="active-description"></span>
-        <span class="genre"><?php print t('Subjects'); ?>: <a href="#"></a></span>
+        <span class="genre"><?php print t('Genre'); ?>: <a href="#"></a></span>
         <div class="active-rating rating-0"></div><span class="rating-count">(0)</span>
         <a href="#" class="reviews"><?php print t('Reviews'); ?> <span class="review-count">(0)</span></a>
         <a href="#" class="active-more-info"><?php print t('More info'); ?></a>
