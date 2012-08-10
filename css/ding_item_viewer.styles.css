@@ -1,3 +1,7 @@
 .search-item_viewer-query {
   float: left;
 }
+
+.sort-hidden, .search-query-hidden {
+  display: none;
+}

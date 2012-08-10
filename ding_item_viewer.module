@@ -11,10 +11,10 @@ function ding_item_viewer_menu() {
   $menu = array();
 
   $menu['admin/config/ding/item_viewer'] = array(
-    'name' => 'Ding item viewer',
+    'title' => 'Ding item viewer',
     'description' => 'Configure ding item viewer',
     'access arguments' => array('manage item viewer'),
-    'page callback' => '',
+    'page callback' => 'ding_item_viewer_admin_page',
     'page arguments' => array(),
     'file' => 'ding_item_viewer.admin.inc'
   );
@@ -34,4 +34,17 @@ function ding_item_viewer_permission() {
   );
 
   return $perm;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function ding_item_viewer_theme($existing, $type, $theme, $path) {
+  $hooks = array();
+
+  $hooks['ding_item_viewer_admin_form'] = array(
+    'render element' => 'form',
+  );
+
+  return $hooks;
 }
