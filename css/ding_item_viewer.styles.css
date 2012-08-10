@@ -5,3 +5,290 @@
 .sort-hidden, .search-query-hidden {
   display: none;
 }
+
+.browsebar-inner {
+  margin: 0 auto;
+  overflow: hidden;
+  padding: 0 0 10px 0;
+  position: relative;
+  max-width: 942px;
+  width: 100%;
+}
+
+.browsebar-items-wrapper {
+  width: 942px;
+}
+
+.browsebar-inner .browsebar-item {
+  -moz-box-shadow: 0 0 9px #969488;
+  -webkit-box-shadow: 0 0 9px #969488;
+  background: #fff;
+  box-shadow: 0 0 9px #969488;
+  cursor: pointer;
+  float: left;
+  margin: 0 0 0 -66px;
+  min-height: 220px;
+  padding: 10px 10px 20px;
+  position: relative;
+  width: 120px;
+}
+
+.browsebar-inner .browsebar-item.first{
+  margin: 0 0 0 9px;
+}
+
+.browsebar-inner .browsebar-item.active {
+  cursor: default;
+  margin: 0 86px 0 20px;
+  min-height: 305px;
+  width: 360px;
+}
+
+.browsebar-inner .browsebar-item:hover {
+  z-index: 100;
+}
+
+.browsebar-inner .browsebar-item:hover .title,
+.browsebar-inner .browsebar-item:hover .author{
+  display: block;
+}
+
+.browsebar-inner .browsebar-item.even {
+  top: 20px;
+}
+
+.browsebar-inner .browsebar-item.odd {
+  top: 60px;
+}
+
+.browsebar-inner .browsebar-item .title {
+  color: #000;
+  display: none;
+  font: 12px 'Soho Gothic W01 Bold', Helvetica, Arial, sans-serif;
+  margin: 8px 0 0 0;
+}
+
+.browsebar-inner .browsebar-item .author {
+  color: #53514b;
+  display: none;
+  font: 10px 'Soho Gothic W01 Bold', Helvetica, Arial, sans-serif;
+}
+
+.more-info {
+  background: red;
+  background: url(../img/vert-slider-sprite.png) no-repeat 0 -50px;
+  bottom: 7px;
+  cursor: pointer;
+  direction: ltr;
+  display: block;
+  height: 19px;
+  position: absolute;
+  right: 5px;
+  text-indent: -9000px;
+  width: 19px;
+}
+
+.browsebar-inner .image-rating-wrapper {
+  background: #000;
+  position: relative;
+}
+
+.browsebar-inner .image-rating-wrapper img {
+  -moz-opacity: 0.5;
+  -khtml-opacity: 0.5;
+  filter:progid:DXImageTransform.Microsoft.Alpha(opacity=50);
+  opacity: 0.5;
+}
+
+.browsebar-inner .browsebar-item:hover .image-rating-wrapper img {
+  -moz-opacity: 1;
+  -khtml-opacity: 1;
+  filter:progid:DXImageTransform.Microsoft.Alpha(opacity=100);
+  opacity: 1;
+}
+
+.browsebar-inner .rating {
+  background: url(../img/rating-light.png) no-repeat scroll -81px center transparent;
+  bottom: 8px;
+  height: 14px;
+  left: 8px;
+  position: absolute;
+  width: 77px;
+}
+
+.browsebar-inner .rating-1 {
+  background-position: -65px center;
+}
+
+.browsebar-inner .rating-2 {
+  background-position: -48px center;
+}
+
+.browsebar-inner .rating-3 {
+  background-position: -32px center;
+}
+
+.browsebar-inner .rating-4 {
+  background-position: -17px center;
+}
+
+.browsebar-inner .rating-5 {
+  background-position: -1px center;
+}
+
+.browsebar-inner .reserve-container {
+  margin: 8px 0 0 0;
+}
+
+.browsebar-inner .reserve-label {
+  font: 11px 'Soho Gothic W01 Light', Helvetica, Arial, sans-serif;
+  text-transform: uppercase;
+}
+
+.browsebar-inner .item-loan form {
+  margin: 0;
+  padding: 0;
+}
+
+.browsebar-inner .item-loan form input {
+  color: #49a0a1;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  font: 24px 'Soho Gothic W01 Light', Helvetica, Arial, sans-serif;
+  margin: 0 0 0 -3px;
+  padding: 0;
+}
+
+.browsebar-inner .item-loan form input:hover {
+  text-decoration: underline;
+}
+
+.browsebar-inner .cover-wrapper {
+  float: left;
+  width: 160px;
+}
+
+.browsebar-inner .properties-wrapper {
+  float: left;
+  width: 195px;
+}
+
+.browsebar-inner .properties-wrapper .active-title {
+  font: 28px 'Soho Gothic W01 Bold', Helvetica, Arial, sans-serif;
+  margin: 13px 0 0 0;
+  padding: 0;
+}
+
+.browsebar-inner .properties-wrapper .active-author {
+  color: #53514b;
+  display: block;
+  font: 11px 'Soho Gothic W01 Regular', Helvetica, Arial, sans-serif;
+  margin: 0 0 8px 0;
+  text-transform: uppercase;
+}
+
+.browsebar-inner .properties-wrapper .active-description {
+  display: block;
+  font: 11px/16px 'Soho Gothic W01 Regular', Helvetica, Arial, sans-serif;
+  margin: 0 0 15px 0;
+}
+
+.browsebar-inner .properties-wrapper .genre {
+  display: block;
+  font: 11px/16px 'Soho Gothic W01 Regular', Helvetica, Arial, sans-serif;
+}
+
+.browsebar-inner .properties-wrapper .genre a {
+  color: #3c999a;
+  text-decoration: none;
+}
+
+.browsebar-inner .properties-wrapper .reviews,
+.browsebar-inner .active-more-info {
+  color: #3c999a;
+  clear: both;
+  display: block;
+  font: 11px/16px 'Soho Gothic W01 Regular', Helvetica, Arial, sans-serif;
+  text-decoration: none;
+}
+
+.browsebar-inner .active-rating {
+  background: url(../img/rating.png) no-repeat scroll -77px center transparent;
+  float: left;
+  height: 14px;
+  margin: 13px 0 6px 0;
+  width: 77px;
+}
+
+.browsebar-inner .active-rating.rating-1 {
+  background-position: -63px center;
+}
+
+.browsebar-inner .active-rating.rating-2 {
+  background-position: -46px center;
+}
+
+.browsebar-inner .active-rating.rating-3 {
+  background-position: -30px center;
+}
+
+.browsebar-inner .active-rating.rating-4 {
+  background-position: -15px center;
+}
+
+.browsebar-inner .active-rating.rating-5 {
+  background-position: 0 center;
+}
+
+.browsebar-inner .active-rating.reserve-container {
+  margin: 8px 0 0 0;
+}
+
+.browsebar-inner .rating-count {
+  color: #53514b;
+  display: block;
+  float: left;
+  font: 10px/16px 'Soho Gothic W01 Regular', Helvetica, Arial, sans-serif;
+  margin: 13px 0 0 10px;
+}
+
+.ui-tabs-nav {
+  margin: 10px 0 0 0;
+  background: #53514b;
+  height: 28px;
+  padding: 0;
+}
+
+.ui-tabs-nav li {
+  list-style:none;
+  float: left;
+  position: relative;
+  margin: 0;
+  padding: 0 10px;
+  white-space: nowrap;
+  height: 28px;
+  line-height: 30px;
+  font: 13px Arial, Helvetica, sans-serif;
+  position: relative;
+}
+
+.ui-tabs-nav li a {
+  text-decoration: none;
+  color: #fff;
+  line-height: 28px;
+  position: static;
+}
+
+.ui-tabs-nav li.active {
+  background: #4c8c8b;
+}
+
+.ui-tabs-nav li.active a {
+  background: url(../img/carousel-arrow.png) no-repeat scroll 0 0 transparent;
+  display: block;
+  height: 28px;
+  margin-top: -5px;
+  padding-top: 5px;
+}

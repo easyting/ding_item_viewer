@@ -42,9 +42,21 @@ function ding_item_viewer_permission() {
 function ding_item_viewer_theme($existing, $type, $theme, $path) {
   $hooks = array();
 
-  $hooks['viewer_content'] = array(
+  $hooks['item_viewer_content'] = array(
     'variables' => array(),
     'template' => 'ding_item_viewer.content',
+    'path' => $path . '/templates',
+  );
+
+  $hooks['item_viewer_tab_single'] = array(
+    'variables' => array(),
+    'template' => 'ding_item_viewer.single-tab',
+    'path' => $path . '/templates',
+  );
+
+  $hooks['item_viewer_tabs'] = array(
+    'variables' => array(),
+    'template' => 'ding_item_viewer.tabs',
     'path' => $path . '/templates',
   );
 
@@ -77,10 +89,31 @@ function ding_item_viewer_block_view($delta) {
 
   switch ($delta) {
     case 'item_viewer':
-
-      $block['content'] = theme('viewer_content');
+      drupal_add_css(drupal_get_path('module', 'ding_item_viewer') . '/css/ding_item_viewer.styles.css');
+      $tabs = ding_item_viewer_build_tabs();
+      $block['content'] = theme('item_viewer_content', array('tabs' => $tabs));
       break;
   }
 
   return $block;
+}
+
+/**
+ * Build tabs for item viewer.
+ *
+ * @return
+ *   Tabs layout markup.
+ */
+function ding_item_viewer_build_tabs() {
+  $queries = variable_get('ding_item_viewer_search_queries');
+
+  $tabs = '';
+
+  if (is_array($queries)) {
+    foreach ($queries as $k => $query) {
+      $tabs .= theme('item_viewer_tab_single', array('tab_index' => $k, 'tab_title' => $query['title']));
+    }
+  }
+
+  return theme('item_viewer_tabs', array('tabs' => $tabs));
 }
