@@ -1,0 +1,6 @@
+name = "Ding Item Viewer"
+description = "Display ting objects in a carousel view"
+version = "0.1"
+core = "7.x"
+configure = "admin/ding/config/ding/item_viewer"
+package = "Alpha"

@@ -1,0 +1,37 @@
+<?php
+/**
+ * @file
+ * Main module file for item viewer.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function ding_item_viewer_menu() {
+  $menu = array();
+
+  $menu['admin/config/ding/item_viewer'] = array(
+    'name' => 'Ding item viewer',
+    'description' => 'Configure ding item viewer',
+    'access arguments' => array('manage item viewer'),
+    'page callback' => '',
+    'page arguments' => array(),
+    'file' => 'ding_item_viewer.admin.inc'
+  );
+
+  return $menu;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function ding_item_viewer_permission() {
+  $perm = array();
+
+  $perm['manage item viewer'] = array(
+    'title' => t('Manage ding item viewer'),
+    'description' => t('Configure ding item viewer settings such as search query and cache time.')
+  );
+
+  return $perm;
+}
