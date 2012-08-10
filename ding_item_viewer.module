@@ -144,6 +144,7 @@ function ding_item_viewer_build_data() {
     }
   }
 
+  drupal_add_js(drupal_get_path('module', 'ding_item_viewer') . '/js/ding_item_viewer.viewer.js');
   drupal_add_js(array('ding_item_viewer' => array('ting_objects' => drupal_json_encode($output))), 'setting');
 }
 
