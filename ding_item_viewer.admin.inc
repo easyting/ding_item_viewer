@@ -13,6 +13,7 @@
  */
 function ding_item_viewer_admin_page() {
   drupal_add_js(drupal_get_path('module', 'ding_item_viewer') . '/js/ding_item_viewer.admin.js');
+  drupal_add_css(drupal_get_path('module', 'ding_item_viewer') . '/css/ding_item_viewer.styles.css');
   variable_set('ding_item_viewer_search_queries_hidden', array());
 
   return drupal_get_form('ding_item_viewer_admin_form');
