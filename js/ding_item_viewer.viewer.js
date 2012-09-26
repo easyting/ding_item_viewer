@@ -54,13 +54,14 @@
         $('.browsebar-inner').animate({opacity: 0}, 100, function() {
           $('.browsebar-inner .browsebar-item').each(function(i, e) {
             var item = $(this);
-
             // Loop through ting objects, so the script doesn't get stuck,
             // when it reached the end of the JSON object.
             var count = get_objects_count();
             if (object_offset >= count) {
               object_offset = 0;
             }
+
+            if (count == 0) return;
 
             // The center item requires some special treatment.
             if (i != 3) {
