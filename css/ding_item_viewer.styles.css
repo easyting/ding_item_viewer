@@ -48,11 +48,6 @@
   z-index: 100;
 }
 
-.browsebar-inner .browsebar-item:hover .title,
-.browsebar-inner .browsebar-item:hover .author{
-  display: block;
-}
-
 .browsebar-inner .browsebar-item.even {
   top: 20px;
 }
@@ -63,14 +58,12 @@
 
 .browsebar-inner .browsebar-item .title {
   color: #000;
-  display: none;
   font: 12px 'Soho Gothic W01 Bold', Helvetica, Arial, sans-serif;
   margin: 8px 0 0 0;
 }
 
 .browsebar-inner .browsebar-item .author {
   color: #53514b;
-  display: none;
   font: 10px 'Soho Gothic W01 Bold', Helvetica, Arial, sans-serif;
 }
 
