@@ -433,6 +433,6 @@ function ding_item_viewer_generate_cache_id($keyword) {
  */
 function ding_item_viewer_ding_item_cache() {
   return array(
-    'ding_item_viewer' => 'Ding item viewer'
+    'ding_item_viewer' => t('Ding item viewer')
   );
 }
