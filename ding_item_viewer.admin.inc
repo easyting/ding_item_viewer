@@ -109,7 +109,7 @@ function ding_item_viewer_admin_form($form, &$form_state) {
   // Ajaxified button for new fields.
   $form['browsebar']['new_search_browsebar_button'] = array(
     '#type' => 'button',
-    '#value' => 'Add another',
+    '#value' => t('Add another'),
     '#name' => 'add_query',
     '#ajax' => array(
       'callback' => 'ding_item_viewer_admin_form_ajaxify',
