@@ -34,17 +34,16 @@
       <span class="more-info"><?php print t('More info'); ?></span>
     </div>
     <div class="browsebar-item active">
+      <div class="active-item-title"><h2 class="active-title"></h2></div>
       <div class="cover-wrapper">
-        <img src="" class="image" alt="" />
+        <div class="cover-wrapper-inner"><img src="" class="image" alt="" /></div>
         <div class="reserve-container">
           <span class="reserve-label"><?php print t('Reserve here'); ?></span>
           <div class="item-loan">
-            
           </div>
         </div>
       </div>
       <div class="properties-wrapper">
-        <h2 class="active-title"></h2>
         <span class="active-author"></span>
         <span class="active-description"></span>
         <span class="genre"><?php print t('Genre'); ?>: <a href="#"></a></span>
