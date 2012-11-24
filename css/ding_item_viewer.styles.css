@@ -7,7 +7,8 @@
 }
 
 .browsebar-inner {
-  margin: 0 auto;
+  height: 415px;
+  margin: 10px auto 0;
   overflow: hidden;
   padding: 0 0 10px 0;
   position: relative;
@@ -27,7 +28,6 @@
   cursor: pointer;
   float: left;
   margin: 0 0 0 -66px;
-  min-height: 220px;
   padding: 10px 10px 20px;
   position: relative;
   width: 120px;
@@ -40,17 +40,13 @@
 .browsebar-inner .browsebar-item.active {
   cursor: default;
   margin: 0 86px 0 20px;
-  min-height: 305px;
+  height: 375px;
+  overflow: hidden;
   width: 360px;
 }
 
 .browsebar-inner .browsebar-item:hover {
   z-index: 100;
-}
-
-.browsebar-inner .browsebar-item:hover .title,
-.browsebar-inner .browsebar-item:hover .author{
-  display: block;
 }
 
 .browsebar-inner .browsebar-item.even {
@@ -63,14 +59,14 @@
 
 .browsebar-inner .browsebar-item .title {
   color: #000;
-  display: none;
+  display: block;
   font: 12px 'Soho Gothic W01 Bold', Helvetica, Arial, sans-serif;
   margin: 8px 0 0 0;
 }
 
 .browsebar-inner .browsebar-item .author {
   color: #53514b;
-  display: none;
+  display: block;
   font: 10px 'Soho Gothic W01 Bold', Helvetica, Arial, sans-serif;
 }
 
@@ -176,9 +172,21 @@
   width: 195px;
 }
 
-.browsebar-inner .properties-wrapper .active-title {
+.browsebar-inner .active-item-title {
+  clear: both;
+  max-height: 70px;
+  overflow: hidden;
+  margin: 0 0 5px 0;
+}
+
+.browsebar-inner .cover-wrapper-inner {
+  max-height: 250px;
+  overflow: hidden;
+}
+
+.browsebar-inner .active-item-title .active-title {
   font: 28px 'Soho Gothic W01 Bold', Helvetica, Arial, sans-serif;
-  margin: 13px 0 0 0;
+  margin: 0;
   padding: 0;
 }
 
@@ -193,7 +201,9 @@
 .browsebar-inner .properties-wrapper .active-description {
   display: block;
   font: 11px/16px 'Soho Gothic W01 Regular', Helvetica, Arial, sans-serif;
+  max-height: 160px;
   margin: 0 0 15px 0;
+  overflow: hidden;
 }
 
 .browsebar-inner .properties-wrapper .genre {
@@ -256,7 +266,7 @@
 }
 
 .ui-tabs-nav {
-  margin: 10px 0 0 0;
+  margin: 10px 0;
   background: #53514b;
   height: 28px;
   padding: 0;
