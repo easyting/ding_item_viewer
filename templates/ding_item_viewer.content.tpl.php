@@ -37,11 +37,11 @@
       <div class="active-item-title"><h2 class="active-title"></h2></div>
       <div class="cover-wrapper">
         <div class="cover-wrapper-inner"><img src="" class="image" alt="" /></div>
-        <div class="reserve-container">
+        <!-- div class="reserve-container">
           <span class="reserve-label"><?php print t('Reserve here'); ?></span>
           <div class="item-loan">
           </div>
-        </div>
+        </div -->
       </div>
       <div class="properties-wrapper">
         <span class="active-author"></span>
