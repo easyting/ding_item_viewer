@@ -61,7 +61,10 @@
               object_offset = 0;
             }
 
-            if (count == 0) return;
+            if (count == 0) {
+              $('#block-ding-item-viewer-item-viewer').html('').hide();
+              return;
+            }
 
             // The center item requires some special treatment.
             if (i != 3) {
