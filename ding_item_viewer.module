@@ -185,7 +185,7 @@ function ding_item_viewer_get_objects($query = '', $count = 0, $no_cover = FALSE
             $cover_exists = ding_item_viewer_check_cover($searchItem->localId);
           }
           catch (Exception $e) {
-            return FALSE;
+            break;
           }
 
           if (!$cover_exists && !$no_cover) {
@@ -294,9 +294,7 @@ function ding_item_viewer_get_objects($query = '', $count = 0, $no_cover = FALSE
     try {
       ding_item_viewer_create_missed_covers($objects);
     }
-    catch (Exception $e) {
-      return FALSE;
-    }
+    catch (Exception $e) {}
   }
 
   return $objects;
@@ -344,7 +342,7 @@ function ding_item_viewer_check_cover($local_id) {
 
   $cover = $service->getByFaustNumber($local_id);
 
-  if (count($cover) > 0) {
+  if (isset($cover[$local_id])) {
     return TRUE;
   }
 
