@@ -147,6 +147,7 @@ function ding_item_viewer_build_data() {
     }
 
     drupal_add_js(drupal_get_path('module', 'ding_item_viewer') . '/js/ding_item_viewer.viewer.js');
+    drupal_add_js(drupal_get_path('module', 'ding_reservation') . '/js/ding_reservation_scripts.js');
     drupal_add_js(array('ding_item_viewer' => array('ting_objects' => drupal_json_encode($output))), 'setting');
   }
 }
@@ -195,6 +196,7 @@ function ding_item_viewer_get_objects($query = '', $count = 0, $no_cover = FALSE
           $item = new stdClass();
           $item->primary_object = $collection->primary_object;
           $item->id = $searchItem->id;
+          $item->localId = $searchItem->localId;
           $item->isbn = isset($searchItem->record['dc:identifier']['dkdcplus:ISBN'][0]) ?
                         $searchItem->record['dc:identifier']['dkdcplus:ISBN'][0] : NULL;
           $item->ac_source = isset($searchItem->record['ac:source'][''][0]) ?
