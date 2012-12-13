@@ -7,7 +7,7 @@
 }
 
 .browsebar-inner {
-  height: 415px;
+  height: 335px;
   margin: 10px auto 0;
   overflow: hidden;
   padding: 0 0 10px 0;
@@ -40,7 +40,7 @@
 .browsebar-inner .browsebar-item.active {
   cursor: default;
   margin: 0 86px 0 20px;
-  height: 375px;
+  height: 310px;
   overflow: hidden;
   width: 360px;
 }

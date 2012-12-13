@@ -89,6 +89,7 @@ function ding_item_viewer_block_view($delta) {
 
   switch ($delta) {
     case 'item_viewer':
+      drupal_add_library('system', 'drupal.ajax');
       drupal_add_css(drupal_get_path('module', 'ding_item_viewer') . '/css/ding_item_viewer.styles.css');
       $tabs = ding_item_viewer_build_tabs();
       ding_item_viewer_build_data();
