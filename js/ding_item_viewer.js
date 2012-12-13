@@ -43,7 +43,7 @@
             message: ''
           };
           var base = reserve_link.attr('id');
-          Drupal.ajax[base] = new Drupal.ajax( base, reserve_link, element_settings );
+          Drupal.ajax[base] = new Drupal.ajax(base, reserve_link, element_settings);
 
           reserve_link.unbind(Drupal.ajax[base].event);
           reserve_link.bind(Drupal.ajax[base].event, function (event) {
