@@ -138,12 +138,20 @@ function ding_item_viewer_build_data() {
       $cache = cache_get($cid, 'cache_ding_item');
 
       if (!$cache) {
-        $response = ding_item_viewer_get_objects($query['query'], $count);
-        $output[] = $response;
-        cache_set($cid, $response, 'cache_ding_item', time() + $ttl * 3600);
+        $objects = ding_item_viewer_get_objects($query['query'], $count);
+        cache_set($cid, $objects, 'cache_ding_item', time() + $ttl * 3600);
       }
       else {
-        $output[] = $cache->data;
+        $objects = $cache->data;
+      }
+
+      // Check if cover images are physically present.
+      try {
+        ding_item_viewer_create_missed_covers($objects);
+        $output[] = $objects;
+      }
+      catch (Exception $e) {
+        // No special handling at the moment.
       }
     }
 
@@ -238,7 +246,8 @@ function ding_item_viewer_get_objects($query = '', $count = 0, $no_cover = FALSE
 
           // Set image filepath.
           // Image existence will be checked further.
-          $item->image = file_create_url(ting_covers_object_path($searchItem->localId));
+          $item->image_uri = ting_covers_object_path($searchItem->localId);
+          $item->image = file_create_url($item->image_uri);
 
           if (isset($searchItem->record['dc:description'][''][0])) {
             $item->description = $searchItem->record['dc:description'][''][0];
@@ -292,11 +301,6 @@ function ding_item_viewer_get_objects($query = '', $count = 0, $no_cover = FALSE
         }
       }
     }
-
-    try {
-      ding_item_viewer_create_missed_covers($objects);
-    }
-    catch (Exception $e) {}
   }
 
   return $objects;
@@ -359,7 +363,8 @@ function ding_item_viewer_check_cover($local_id) {
  */
 function ding_item_viewer_create_missed_covers(&$items) {
   foreach ($items as $item_id => $item) {
-    if (!file_exists($item->image)) {
+    $filepath = drupal_realpath($item->image_uri);
+    if (!file_exists($filepath)) {
       $missing_images_ids[] = $item_id;
     }
   }
