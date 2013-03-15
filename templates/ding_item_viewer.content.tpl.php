@@ -34,7 +34,7 @@
       <span class="more-info"><?php print t('More info'); ?></span>
     </div>
     <div class="browsebar-item active">
-      <div class="active-item-title"><a href="#" class="active-more-info"><h2 class="active-title"></h2></a></div>
+      <div class="active-item-title"><h2><a href="#" class="active-title active-more-info"></a></h2></div>
       <div class="cover-wrapper">
         <div class="cover-wrapper-inner"><img src="" class="image" alt="" /></div>
         <div class="reserve-container">
