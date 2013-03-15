@@ -311,6 +311,9 @@ function ding_item_viewer_search_submit($form, &$form_state) {
   // Save the queries as a persistent variable.
   variable_set('ding_item_viewer_search_queries', $searches);
 
+  // Clear all item list cache.
+  module_invoke('ding_item_cache', 'clear_all');
+
   // Make ting search requests.
   // browsebar_do_request();
 }
