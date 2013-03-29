@@ -16,7 +16,7 @@ function ding_item_viewer_menu() {
     'access arguments' => array('manage item viewer'),
     'page callback' => 'ding_item_viewer_admin_page',
     'page arguments' => array(),
-    'file' => 'ding_item_viewer.admin.inc'
+    'file' => 'ding_item_viewer.admin.inc',
   );
 
   return $menu;
@@ -30,7 +30,7 @@ function ding_item_viewer_permission() {
 
   $perm['manage item viewer'] = array(
     'title' => t('Manage ding item viewer'),
-    'description' => t('Configure ding item viewer settings such as search query and cache time.')
+    'description' => t('Configure ding item viewer settings such as search query and cache time.'),
   );
 
   return $perm;
@@ -74,7 +74,7 @@ function ding_item_viewer_block_info() {
   $blocks = array();
 
   $blocks['item_viewer'] = array(
-    'info' => t('Ding item viewer')
+    'info' => t('Ding item viewer'),
   );
 
   return $blocks;
@@ -208,9 +208,9 @@ function ding_item_viewer_get_objects($query = '', $count = 0, $no_cover = FALSE
           $item->isbn = isset($searchItem->record['dc:identifier']['dkdcplus:ISBN'][0]) ?
                         $searchItem->record['dc:identifier']['dkdcplus:ISBN'][0] : NULL;
           $item->ac_source = isset($searchItem->record['ac:source'][''][0]) ?
-                              $searchItem->record['ac:source'][''][0] : NULL;
+                             $searchItem->record['ac:source'][''][0] : NULL;
           $item->dc_source = isset($searchItem->record['dc:source'][''][0]) ?
-                              $searchItem->record['dc:source'][''][0] : NULL;
+                             $searchItem->record['dc:source'][''][0] : NULL;
           $item->title = $searchItem->record['dc:title'][''][0];
 
           if (isset($searchItem->record['dc:creator'])) {
@@ -263,7 +263,7 @@ function ding_item_viewer_get_objects($query = '', $count = 0, $no_cover = FALSE
           }
 
           $item->year = isset($searchItem->record['dc:date'][''][0]) ?
-                          $searchItem->record['dc:date'][''][0] : NULL;
+                        $searchItem->record['dc:date'][''][0] : NULL;
           // Default values
           $item->type = 1;
           $item->rating = 0;
@@ -440,6 +440,6 @@ function ding_item_viewer_generate_cache_id($keyword) {
  */
 function ding_item_viewer_ding_item_cache() {
   return array(
-    'ding_item_viewer' => t('Ding item viewer')
+    'ding_item_viewer' => t('Ding item viewer'),
   );
 }
