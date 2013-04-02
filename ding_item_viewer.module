@@ -139,7 +139,7 @@ function ding_item_viewer_build_data() {
       $cache = cache_get($cid, 'cache_ding_item');
 
       if (!$cache) {
-        $objects = ding_item_viewer_get_objects($query['query'], $count, $sort);
+        $objects = ding_item_viewer_get_objects($query['query'], $count, FALSE, $sort);
         cache_set($cid, $objects, 'cache_ding_item', time() + $ttl * 3600);
       }
       else {
@@ -170,7 +170,7 @@ function ding_item_viewer_build_data() {
  * @param $count
  *   Number of objects to search.
  */
-function ding_item_viewer_get_objects($query = '', $count = 0, $sort = '', $no_cover = FALSE) {
+function ding_item_viewer_get_objects($query = '', $count = 0, $no_cover = FALSE, $sort = '') {
   $objects = array();
   $request = '(' . $query . ')';
   $page = 1;
