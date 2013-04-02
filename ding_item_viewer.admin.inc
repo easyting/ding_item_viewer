@@ -126,6 +126,17 @@ function ding_item_viewer_admin_form($form, &$form_state) {
     '#default_value' => variable_get('ding_item_viewer_item_limit', 24),
   );
 
+  $form['browsebar']['ding_item_viewer_item_sorting'] = array(
+    '#type' => 'select',
+    '#title' => t('Sorting'),
+    '#options' => array(
+      '' => t('- None -'),
+      'acquisitionDate_descending' => t('Acquisition date (Descending)'),
+    ),
+    '#default_value' => variable_get('ding_item_viewer_item_sorting', ''),
+    '#description' => t('If not set, defaults to Ranking'),
+  );
+
   $form['browsebar']['ding_item_viewer_cache_ttl'] = array(
     '#type' => 'textfield',
     '#title' => t('Cache TTL'),
@@ -291,7 +302,6 @@ function ding_item_viewer_query_form($item = array(), $index = 0) {
 function ding_item_viewer_search_submit($form, &$form_state) {
   $c = count($form_state['input']['title']);
   $searches = array();
-  $search_items = array();
 
   for ($i = 0; $i < $c; $i++) {
     // Make an array for saving, ignoring queries w/o title.
