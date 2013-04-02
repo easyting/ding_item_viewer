@@ -129,6 +129,7 @@ function ding_item_viewer_build_tabs() {
 function ding_item_viewer_build_data() {
   $queries = variable_get('ding_item_viewer_search_queries');
   $count = variable_get('ding_item_viewer_item_limit', 24);
+  $sort = variable_get('ding_item_viewer_item_sorting', '');
   $ttl = variable_get('ding_item_viewer_cache_ttl', 1);
   $output = array();
 
@@ -138,7 +139,7 @@ function ding_item_viewer_build_data() {
       $cache = cache_get($cid, 'cache_ding_item');
 
       if (!$cache) {
-        $objects = ding_item_viewer_get_objects($query['query'], $count);
+        $objects = ding_item_viewer_get_objects($query['query'], $count, $sort);
         cache_set($cid, $objects, 'cache_ding_item', time() + $ttl * 3600);
       }
       else {
@@ -169,7 +170,7 @@ function ding_item_viewer_build_data() {
  * @param $count
  *   Number of objects to search.
  */
-function ding_item_viewer_get_objects($query = '', $count = 0, $no_cover = FALSE) {
+function ding_item_viewer_get_objects($query = '', $count = 0, $sort = '', $no_cover = FALSE) {
   $objects = array();
   $request = '(' . $query . ')';
   $page = 1;
@@ -177,7 +178,7 @@ function ding_item_viewer_get_objects($query = '', $count = 0, $no_cover = FALSE
   if (!empty($query) && !empty($count)) {
     module_load_include('client.inc', 'ting');
     // Search with portions of 10 items
-    while ($result = ding_item_viewer_search_ting($request, $page++, 10)) {
+    while ($result = ding_item_viewer_search_ting($request, $page++, 10, $sort)) {
       // This query is out of results OR we have needed amount of items
       if ($result->numTotalCollections == 0 || count($objects) == $count) {
         break;
@@ -318,13 +319,14 @@ function ding_item_viewer_get_objects($query = '', $count = 0, $no_cover = FALSE
  * @return
  *   Ting search result object.
  */
-function ding_item_viewer_search_ting($query = '', $page = 1, $records = 10) {
+function ding_item_viewer_search_ting($query = '', $page = 1, $records = 10, $sort = '') {
   if (!empty($query)) {
     $query = '(' . $query . ')';
 
     $options = array(
       'allObjects' => FALSE,
       'enrich' => TRUE,
+      'sort' => $sort,
     );
 
     $search_result = ting_do_search($query, $page, $records, $options);
