@@ -12,7 +12,7 @@
   <div class="browsebar-items-wrapper">
   <?php
     $i = 0;
-    $last = 6; // Fixed number of items to show.
+    $last = 5; // Fixed number of items to show (starting from 0).
     foreach ($data[0] as $item) {
       if ($i > $last) {
         break;
