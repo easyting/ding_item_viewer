@@ -11,9 +11,9 @@
 <div class="browsebar-inner">
   <div class="browsebar-items-wrapper">
   <?php
-    $i=0;
+    $i = 0;
     $last = 6; // Fixed number of items to show.
-    foreach($data[0] as $item) {
+    foreach ($data[0] as $item) {
       if ($i > $last) {
         break;
       }
@@ -21,15 +21,17 @@
       if ($i == 0) {
         $row_class .= ' first';
       }
-      if ($i == $last) {
+      elseif ($i == $last) {
         $row_class .= ' last';
       }
+
       if ($i == 3) {
         echo theme('ding_item_viewer_item_active', array('item' => $item, 'item_class' => $row_class));
       }
       else {
         echo theme('ding_item_viewer_item', array('item' => $item, 'item_class' => $row_class));
       }
+
       $i++;
     }
   ?>
