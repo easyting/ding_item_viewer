@@ -11,7 +11,7 @@
 <div class="browsebar-item active">
   <div class="active-item-title">
     <h2>
-      <a href="#" class="active-title active-more-info"></a>
+      <a href="<?php echo url('ting/object/' . $item->id); ?>" class="active-title active-more-info"><?php echo $item->title; ?></a>
     </h2>
   </div>
   <div class="cover-wrapper">
