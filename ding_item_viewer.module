@@ -48,6 +48,18 @@ function ding_item_viewer_theme($existing, $type, $theme, $path) {
     'path' => $path . '/templates',
   );
 
+  $hooks['ding_item_viewer_item'] = array(
+    'variables' => array(),
+    'template' => 'ding_item_viewer.item',
+    'path' => $path . '/templates',
+  );
+
+  $hooks['ding_item_viewer_item_active'] = array(
+    'variables' => array(),
+    'template' => 'ding_item_viewer.item_active',
+    'path' => $path . '/templates',
+  );
+
   $hooks['item_viewer_tab_single'] = array(
     'variables' => array(),
     'template' => 'ding_item_viewer.single-tab',
@@ -92,8 +104,8 @@ function ding_item_viewer_block_view($delta) {
       drupal_add_library('system', 'drupal.ajax');
       drupal_add_css(drupal_get_path('module', 'ding_item_viewer') . '/css/ding_item_viewer.styles.css');
       $tabs = ding_item_viewer_build_tabs();
-      ding_item_viewer_build_data();
-      $block['content'] = theme('item_viewer_content', array('tabs' => $tabs));
+      $output = ding_item_viewer_build_data();
+      $block['content'] = theme('item_viewer_content', array('tabs' => $tabs, 'data' => $output));
       break;
   }
 
@@ -160,6 +172,8 @@ function ding_item_viewer_build_data() {
     drupal_add_js(drupal_get_path('module', 'ding_reservation') . '/js/ding_reservation_scripts.js');
     drupal_add_js(array('ding_item_viewer' => array('ting_objects' => drupal_json_encode($output))), 'setting');
   }
+
+  return $output;
 }
 
 /**
