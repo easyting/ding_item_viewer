@@ -16,7 +16,7 @@ function ding_item_viewer_menu() {
     'access arguments' => array('manage item viewer'),
     'page callback' => 'ding_item_viewer_admin_page',
     'page arguments' => array(),
-    'file' => 'ding_item_viewer.admin.inc'
+    'file' => 'ding_item_viewer.admin.inc',
   );
 
   return $menu;
@@ -30,7 +30,7 @@ function ding_item_viewer_permission() {
 
   $perm['manage item viewer'] = array(
     'title' => t('Manage ding item viewer'),
-    'description' => t('Configure ding item viewer settings such as search query and cache time.')
+    'description' => t('Configure ding item viewer settings such as search query and cache time.'),
   );
 
   return $perm;
@@ -45,6 +45,18 @@ function ding_item_viewer_theme($existing, $type, $theme, $path) {
   $hooks['item_viewer_content'] = array(
     'variables' => array(),
     'template' => 'ding_item_viewer.content',
+    'path' => $path . '/templates',
+  );
+
+  $hooks['ding_item_viewer_item'] = array(
+    'variables' => array(),
+    'template' => 'ding_item_viewer.item',
+    'path' => $path . '/templates',
+  );
+
+  $hooks['ding_item_viewer_item_active'] = array(
+    'variables' => array(),
+    'template' => 'ding_item_viewer.item_active',
     'path' => $path . '/templates',
   );
 
@@ -74,7 +86,7 @@ function ding_item_viewer_block_info() {
   $blocks = array();
 
   $blocks['item_viewer'] = array(
-    'info' => t('Ding item viewer')
+    'info' => t('Ding item viewer'),
   );
 
   return $blocks;
@@ -92,8 +104,8 @@ function ding_item_viewer_block_view($delta) {
       drupal_add_library('system', 'drupal.ajax');
       drupal_add_css(drupal_get_path('module', 'ding_item_viewer') . '/css/ding_item_viewer.styles.css');
       $tabs = ding_item_viewer_build_tabs();
-      ding_item_viewer_build_data();
-      $block['content'] = theme('item_viewer_content', array('tabs' => $tabs));
+      $output = ding_item_viewer_build_data();
+      $block['content'] = theme('item_viewer_content', array('tabs' => $tabs, 'data' => $output));
       break;
   }
 
@@ -129,6 +141,7 @@ function ding_item_viewer_build_tabs() {
 function ding_item_viewer_build_data() {
   $queries = variable_get('ding_item_viewer_search_queries');
   $count = variable_get('ding_item_viewer_item_limit', 24);
+  $sort = variable_get('ding_item_viewer_item_sorting', '');
   $ttl = variable_get('ding_item_viewer_cache_ttl', 1);
   $output = array();
 
@@ -138,7 +151,7 @@ function ding_item_viewer_build_data() {
       $cache = cache_get($cid, 'cache_ding_item');
 
       if (!$cache) {
-        $objects = ding_item_viewer_get_objects($query['query'], $count);
+        $objects = ding_item_viewer_get_objects($query['query'], $count, FALSE, $sort);
         cache_set($cid, $objects, 'cache_ding_item', time() + $ttl * 3600);
       }
       else {
@@ -159,6 +172,8 @@ function ding_item_viewer_build_data() {
     drupal_add_js(drupal_get_path('module', 'ding_reservation') . '/js/ding_reservation_scripts.js');
     drupal_add_js(array('ding_item_viewer' => array('ting_objects' => drupal_json_encode($output))), 'setting');
   }
+
+  return $output;
 }
 
 /**
@@ -169,7 +184,7 @@ function ding_item_viewer_build_data() {
  * @param $count
  *   Number of objects to search.
  */
-function ding_item_viewer_get_objects($query = '', $count = 0, $no_cover = FALSE) {
+function ding_item_viewer_get_objects($query = '', $count = 0, $no_cover = FALSE, $sort = '') {
   $objects = array();
   $request = '(' . $query . ')';
   $page = 1;
@@ -177,7 +192,7 @@ function ding_item_viewer_get_objects($query = '', $count = 0, $no_cover = FALSE
   if (!empty($query) && !empty($count)) {
     module_load_include('client.inc', 'ting');
     // Search with portions of 10 items
-    while ($result = ding_item_viewer_search_ting($request, $page++, 10)) {
+    while ($result = ding_item_viewer_search_ting($request, $page++, 10, $sort)) {
       // This query is out of results OR we have needed amount of items
       if ($result->numTotalCollections == 0 || count($objects) == $count) {
         break;
@@ -208,9 +223,9 @@ function ding_item_viewer_get_objects($query = '', $count = 0, $no_cover = FALSE
           $item->isbn = isset($searchItem->record['dc:identifier']['dkdcplus:ISBN'][0]) ?
                         $searchItem->record['dc:identifier']['dkdcplus:ISBN'][0] : NULL;
           $item->ac_source = isset($searchItem->record['ac:source'][''][0]) ?
-                              $searchItem->record['ac:source'][''][0] : NULL;
+                             $searchItem->record['ac:source'][''][0] : NULL;
           $item->dc_source = isset($searchItem->record['dc:source'][''][0]) ?
-                              $searchItem->record['dc:source'][''][0] : NULL;
+                             $searchItem->record['dc:source'][''][0] : NULL;
           $item->title = $searchItem->record['dc:title'][''][0];
 
           if (isset($searchItem->record['dc:creator'])) {
@@ -263,7 +278,7 @@ function ding_item_viewer_get_objects($query = '', $count = 0, $no_cover = FALSE
           }
 
           $item->year = isset($searchItem->record['dc:date'][''][0]) ?
-                          $searchItem->record['dc:date'][''][0] : NULL;
+                        $searchItem->record['dc:date'][''][0] : NULL;
           // Default values
           $item->type = 1;
           $item->rating = 0;
@@ -318,13 +333,14 @@ function ding_item_viewer_get_objects($query = '', $count = 0, $no_cover = FALSE
  * @return
  *   Ting search result object.
  */
-function ding_item_viewer_search_ting($query = '', $page = 1, $records = 10) {
+function ding_item_viewer_search_ting($query = '', $page = 1, $records = 10, $sort = '') {
   if (!empty($query)) {
     $query = '(' . $query . ')';
 
     $options = array(
       'allObjects' => FALSE,
       'enrich' => TRUE,
+      'sort' => $sort,
     );
 
     $search_result = ting_do_search($query, $page, $records, $options);
@@ -440,6 +456,6 @@ function ding_item_viewer_generate_cache_id($keyword) {
  */
 function ding_item_viewer_ding_item_cache() {
   return array(
-    'ding_item_viewer' => t('Ding item viewer')
+    'ding_item_viewer' => t('Ding item viewer'),
   );
 }

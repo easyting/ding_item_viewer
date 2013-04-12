@@ -115,7 +115,7 @@ function ding_item_viewer_admin_form($form, &$form_state) {
       'callback' => 'ding_item_viewer_admin_form_ajaxify',
       'wrapper' => 'ting-search-browsebar-queries',
       'method' => 'replace',
-      'effect' => 'fade'
+      'effect' => 'fade',
     ),
   );
 
@@ -123,14 +123,25 @@ function ding_item_viewer_admin_form($form, &$form_state) {
     '#type' => 'textfield',
     '#title' => t('Item limit'),
     '#description' => t('The number of items to be returned in search result.'),
-    '#default_value' => variable_get('ding_item_viewer_item_limit', 24)
+    '#default_value' => variable_get('ding_item_viewer_item_limit', 24),
+  );
+
+  $form['browsebar']['ding_item_viewer_item_sorting'] = array(
+    '#type' => 'select',
+    '#title' => t('Sorting'),
+    '#options' => array(
+      '' => t('- None -'),
+      'acquisitionDate_descending' => t('Acquisition date (Descending)'),
+    ),
+    '#default_value' => variable_get('ding_item_viewer_item_sorting', ''),
+    '#description' => t('If not set, defaults to Ranking'),
   );
 
   $form['browsebar']['ding_item_viewer_cache_ttl'] = array(
     '#type' => 'textfield',
     '#title' => t('Cache TTL'),
     '#description' => t('How many hours the cache lives.'),
-    '#default_value' => variable_get('ding_item_viewer_cache_ttl', 1)
+    '#default_value' => variable_get('ding_item_viewer_cache_ttl', 1),
   );
 
   // Wrap the form, due to draggable items renewal.
@@ -189,9 +200,9 @@ function theme_ding_item_viewer_admin_form($variables) {
     $rows[] = array(
       'data' => array(
         drupal_render($form['browsebar']['ting_searches'][$key]),
-        drupal_render($sort)
+        drupal_render($sort),
       ),
-      'class' => $classes
+      'class' => $classes,
     );
   }
 
@@ -202,7 +213,7 @@ function theme_ding_item_viewer_admin_form($variables) {
     'caption' => '',
     'colgroups' => array(),
     'sticky' => FALSE,
-    'empty' => 'EMPTY'
+    'empty' => 'EMPTY',
   );
   $output = theme_table($table_vars);
 
@@ -231,8 +242,8 @@ function ding_item_viewer_query_form($item = array(), $index = 0) {
     '#value' => 0,
     '#attributes' => array(
       'class' => array(
-        'sort-hidden'
-      )
+        'sort-hidden',
+      ),
     ),
   );
 
@@ -265,15 +276,15 @@ function ding_item_viewer_query_form($item = array(), $index = 0) {
     '#name' => 'remove_' . $index,
     '#attributes' => array(
       'class' => array(
-        'remove'
-      )
+        'remove',
+      ),
     ),
     '#suffix' => '</div><div class="clear"></div>',
     '#ajax' => array(
       'callback' => 'ding_item_viewer_admin_form_ajaxify',
       'wrapper' => 'ting-search-browsebar-queries',
       'method' => 'replace',
-      'effect' => 'fade'
+      'effect' => 'fade',
     ),
   );
 
@@ -291,7 +302,6 @@ function ding_item_viewer_query_form($item = array(), $index = 0) {
 function ding_item_viewer_search_submit($form, &$form_state) {
   $c = count($form_state['input']['title']);
   $searches = array();
-  $search_items = array();
 
   for ($i = 0; $i < $c; $i++) {
     // Make an array for saving, ignoring queries w/o title.
@@ -303,7 +313,7 @@ function ding_item_viewer_search_submit($form, &$form_state) {
       $searches[] = array(
         'title' => $title,
         'subtitle' => $subtitle,
-        'query' => $query
+        'query' => $query,
       );
     }
   }
