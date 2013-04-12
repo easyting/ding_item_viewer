@@ -1,6 +1,6 @@
 name = "Ding Item Viewer"
 description = "Display ting objects in a carousel view"
-version = "7.x-1.9.6"
+version = "7.x-1.10"
 core = "7.x"
 configure = "admin/config/ding/item_viewer"
 package = "Artesis"
