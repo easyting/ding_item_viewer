@@ -100,9 +100,20 @@
                 item.find('.active-author').html(ting_object.creator);
                 item.find('.active-description').html(ting_object.description);
                 item.find('.genre a').html(ting_object.subject).attr('href', 'search/ting/' + ting_object.subject);
-                item.find('.active-rating').attr('class', 'active-rating rating-' + ting_object.rating);
-                item.find('.rating-count').html('(' + ting_object.rating_count + ')');
-                item.find('.review-count').html('(' + ting_object.comment_count + ')');
+
+                // Show ratings/reviews for items with ISBN.
+                if (ting_object.has_rating) {
+                  item.find('.active-rating').attr('class', 'active-rating rating-' + ting_object.rating).show();
+                  item.find('.rating-count').html('(' + ting_object.rating_count + ')').show();
+                  item.find('.reviews').show();
+                  item.find('.review-count').html('(' + ting_object.comment_count + ')');
+                }
+                else {
+                  item.find('.active-rating').hide();
+                  item.find('.rating-count').hide();
+                  item.find('.reviews').hide();
+                }
+
                 item.find('.active-more-info').attr('href', 'ting/object/' + ting_object.id);
                 var reserve_link = item.find('.reserve-container a');
                 reserve_link.attr('href', 'reservation/reserve/' + ting_object.localId);
