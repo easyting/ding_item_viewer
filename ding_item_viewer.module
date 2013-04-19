@@ -220,8 +220,8 @@ function ding_item_viewer_get_objects($query = '', $count = 0, $no_cover = FALSE
           $item = new stdClass();
           $item->id = $searchItem->id;
           $item->localId = $searchItem->localId;
-          $item->isbn = isset($searchItem->record['dc:identifier']['dkdcplus:ISBN'][0]) ?
-                        $searchItem->record['dc:identifier']['dkdcplus:ISBN'][0] : NULL;
+          $item->isbn = isset($searchItem->record['dc:identifier']['dkdcplus:ISBN']) ?
+                        _ding_item_viewer_format_isbn($searchItem->record['dc:identifier']['dkdcplus:ISBN']) : NULL;
           $item->ac_source = isset($searchItem->record['ac:source'][''][0]) ?
                              $searchItem->record['ac:source'][''][0] : NULL;
           $item->dc_source = isset($searchItem->record['dc:source'][''][0]) ?
@@ -284,6 +284,7 @@ function ding_item_viewer_get_objects($query = '', $count = 0, $no_cover = FALSE
           $item->rating = 0;
           $item->rating_count = 0;
           $item->comment_count = 0;
+          $item->has_rating = FALSE;
 
           $objects[$searchItem->localId] = $item;
           break;
@@ -294,24 +295,26 @@ function ding_item_viewer_get_objects($query = '', $count = 0, $no_cover = FALSE
     // Make an array of local id's, fetchable by voxb
     if (module_exists('ding_voxb')) {
       $local_ids = array();
-      foreach ($objects as $k => $v) {
-        $local_ids[] = $k;
+      foreach ($objects as $local_id => $v) {
+        if (!empty($v->isbn)) {
+          $local_ids[$local_id] = $v->isbn[0];
+        }
       }
 
       // Fetch details from voxb
       $voxb_details = new VoxbItems();
       $voxb_details->addReviewHandler('review', new VoxbReviews());
-      $response = $voxb_details->fetchByFaust($local_ids);
+      $response = $voxb_details->fetchByISBN($local_ids);
 
       // Assign voxb details to items
-      if ($response) {
-        $c = $voxb_details->getCount();
-        if ($c > 0) {
-          for ($i = 0; $i < $c; $i++) {
-            $detail = $voxb_details->getItem($local_ids[$i]);
-            $objects[$local_ids[$i]]->rating = (int) round($detail->getRating() / 20);
-            $objects[$local_ids[$i]]->rating_count = $detail->getRatingCount();
-            $objects[$local_ids[$i]]->comment_count = $detail->getReviews('review')->getCount();
+      if ($response && $voxb_details->getCount() > 0) {
+        foreach ($local_ids as $local_id => $isbn) {
+          $detail = $voxb_details->getItem($isbn);
+          if ($detail) {
+            $objects[$local_id]->rating = (int) round($detail->getRating() / 20);
+            $objects[$local_id]->rating_count = $detail->getRatingCount();
+            $objects[$local_id]->comment_count = $detail->getReviews('review')->getCount();
+            $objects[$local_id]->has_rating = TRUE;
           }
         }
       }
@@ -458,4 +461,21 @@ function ding_item_viewer_ding_item_cache() {
   return array(
     'ding_item_viewer' => t('Ding item viewer'),
   );
+}
+
+/**
+ * Format ISBN number.
+ * Remove all spaces and dashes.
+ * @param string $isbn
+ *   Unformated ISBN number.
+ *
+ * @return string
+ *   Formated ISBN number.
+ */
+function _ding_item_viewer_format_isbn($isbn) {
+  foreach ($isbn as $k => $number) {
+    $isbn[$k] = str_replace(array(' ', '-'), '', $number);
+  }
+  rsort($isbn);
+  return $isbn;
 }
