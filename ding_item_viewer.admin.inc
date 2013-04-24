@@ -131,6 +131,13 @@ function ding_item_viewer_admin_form($form, &$form_state) {
     '#title' => t('Sorting'),
     '#options' => array(
       '' => t('- None -'),
+      'title_ascending' => t('Title (Ascending)'),
+      'title_descending' => t('Title (Descending)'),
+      'creator_ascending' => t('Creator (Ascending)'),
+      'creator_descending' => t('Creator (Descending)'),
+      'date_ascending' => t('Date (Ascending)'),
+      'date_descending' => t('Date (Descending)'),
+      'acquisitionDate_ascending' => t('Acquisition date (Ascending)'),
       'acquisitionDate_descending' => t('Acquisition date (Descending)'),
     ),
     '#default_value' => variable_get('ding_item_viewer_item_sorting', ''),
