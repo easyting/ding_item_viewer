@@ -38,7 +38,9 @@ if ($item->has_rating) {
     </div>
   </div>
   <div class="properties-wrapper">
-    <span class="active-author"><?php echo $item->creator; ?></span>
+    <?php if (!empty($item->creator)): ?>
+      <span class="active-author"><?php echo $item->creator; ?></span>
+    <?php endif; ?>
     <span class="active-description"><?php echo $item->description; ?></span>
     <span class="genre"><?php print t('Genre'); ?>:
       <a href="<?php echo url('search/ting/' . $item->subject); ?>"><?php echo $item->subject; ?></a>
