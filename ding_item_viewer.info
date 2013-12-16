@@ -6,3 +6,5 @@ configure = "admin/config/ding/item_viewer"
 package = "Artesis"
 
 dependencies[] = "ding_item_cache"
+# This is weak dependency and can be ommited.
+dependencies[] = "ultimate_cron"

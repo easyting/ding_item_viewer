@@ -26,16 +26,6 @@ if ($item->has_rating) {
       <img src="<?php echo $item->image; ?>" class="image"
         alt="<?php echo $item->title . ' ' . $item->year; ?>" />
     </div>
-    <div class="reserve-container">
-      <div class="item-loan">
-        <?php print l(
-          t('Reserve'),
-          'reservation/reserve/' . $item->localId,
-          array('attributes' => array('id' => 'reserve-' . $item->localId))
-          );
-        ?>
-      </div>
-    </div>
   </div>
   <div class="properties-wrapper">
     <?php if (!empty($item->creator)): ?>
@@ -51,5 +41,15 @@ if ($item->has_rating) {
       <?php print t('Reviews'); ?><span class="review-count">(<?php echo $item->comment_count; ?>)</span>
     </a>
     <a href="<?php echo url('ting/object/' . $item->id); ?>" class="active-more-info"><?php print t('More info'); ?></a>
+    <div class="reserve-container">
+      <div class="item-loan">
+        <?php print l(
+          t('Reserve'),
+          'reservation/reserve/' . $item->localId,
+          array('attributes' => array('id' => 'reserve-' . $item->localId))
+          );
+        ?>
+      </div>
+    </div>
   </div>
 </div>

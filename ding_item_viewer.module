@@ -445,9 +445,10 @@ function ding_item_viewer_get_images_from_addi(&$items, $missing_images_local_id
 /**
  * Generate a cache id, based on a keyword.
  *
- * @param $keyword
+ * @param string $keyword
  *   A generic keyword.
- * @return
+ *
+ * @return string
  *   Hash string, meaning a certain cache id.
  */
 function ding_item_viewer_generate_cache_id($keyword) {
@@ -466,6 +467,7 @@ function ding_item_viewer_ding_item_cache() {
 /**
  * Format ISBN number.
  * Remove all spaces and dashes.
+ *
  * @param string $isbn
  *   Unformated ISBN number.
  *
@@ -478,4 +480,56 @@ function _ding_item_viewer_format_isbn($isbn) {
   }
   rsort($isbn);
   return $isbn;
+}
+
+/**
+ * Implements hook_cronapi().
+ */
+function ding_item_viewer_cronapi($op, $function = NULL) {
+  // Value in hours.
+  $ttl = variable_get('ding_item_viewer_cache_ttl', 1);
+
+  switch ($op) {
+    case 'list':
+      return array('ding_item_viewer_warm_cache' => 'Cache warmer');
+
+    break;
+
+    case 'rule':
+      switch ($function) {
+        case 'ding_item_viewer_warm_cache':
+          // Non positive values are incorrect.
+          $ttl = ($ttl > 0) ? $ttl : 1;
+          // Run every defined hour to warm the cache.
+          return "* {$ttl} * * *";
+      }
+      break;
+
+    case 'execute':
+      switch ($function) {
+        case 'ding_item_viewer_warm_cache':
+          // Clear cache.
+          cache_clear_all('ding_item_viewer', 'cache_ding_item', TRUE);
+          // Rebuild cache.
+          ding_item_viewer_build_data();
+          break;
+
+      }
+      break;
+
+    case 'settings':
+      switch ($function) {
+        case 'ding_item_viewer_warm_cache':
+          return array('enabled' => ($ttl > 0));
+      }
+      break;
+
+    case 'configure':
+      switch ($function) {
+        case 'ding_item_viewer_warm_cache':
+          return 'admin/config/ding/item_viewer';
+      }
+      break;
+
+  }
 }
