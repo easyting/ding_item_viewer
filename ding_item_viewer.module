@@ -148,11 +148,11 @@ function ding_item_viewer_build_data() {
   if (is_array($queries)) {
     foreach ($queries as $query) {
       $cid = ding_item_viewer_generate_cache_id($query['query']);
-      $cache = cache_get($cid, 'cache_ding_item');
+      $cache = cache_get($cid);
 
       if (!$cache) {
         $objects = ding_item_viewer_get_objects($query['query'], $count, FALSE, $sort);
-        cache_set($cid, $objects, 'cache_ding_item', time() + $ttl * 3600);
+        cache_set($cid, $objects);
       }
       else {
         $objects = $cache->data;
