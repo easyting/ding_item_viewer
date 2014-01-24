@@ -8,9 +8,9 @@
  *   $tabs - HTML of tabs. See ding_item_viewer.tabs.tpl.php.
  */
 ?>
-<div class="browsebar-inner">
-  <div class="browsebar-items-wrapper">
-  <?php
+<div class="browsebar-inner"><div class="browsebar-items-wrapper"></div></div>
+<?php
+  /*
     $i = 0;
     $last = 5; // Fixed number of items to show (starting from 0).
     foreach ($data[0] as $item) {
@@ -34,7 +34,5 @@
 
       $i++;
     }
+  */
   ?>
-  </div>
-</div>
-<?php print $tabs; ?>
