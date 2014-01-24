@@ -29,9 +29,16 @@ function ding_item_viewer_field_default_fields_alter(&$data) {
   if (isset($data['ting_object-ting_object-ding_entity_buttons'])) {
     $data['ting_object-ting_object-ding_entity_buttons']['field_instance']['display']['ding_item_viewer_big'] = array(
       'label' => 'hidden',
-      'module' => 'ding_entity',
-      'settings' => array(),
-      'type' => 'ding_entity_buttons_ajax',
+      'module' => 'ding_entity_buttons_settings',
+      'settings' => array(
+        'entity_action_active_buttons' => array(
+          'ding_bookmark' => 'ding_bookmark',
+          'ding_reservation' => 0,
+          'ting_relation' => 'ting_relation',
+          'ting_sfx' => 0,
+        ),
+      ),
+      'type' => 'ding_entity_buttons_filtered',
       'weight' => '38',
     ); /* WAS: '' */
     $data['ting_object-ting_object-ding_entity_buttons']['field_instance']['display']['ding_item_viewer_small'] = array(

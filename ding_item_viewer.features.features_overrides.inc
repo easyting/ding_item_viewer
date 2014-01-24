@@ -20,9 +20,16 @@ function ding_item_viewer_features_override_default_overrides() {
   );
   $overrides["field.ting_object-ting_object-ding_entity_buttons.field_instance|display|ding_item_viewer_big"] = array(
     'label' => 'hidden',
-    'module' => 'ding_entity',
-    'settings' => array(),
-    'type' => 'ding_entity_buttons_ajax',
+    'module' => 'ding_entity_buttons_settings',
+    'settings' => array(
+      'entity_action_active_buttons' => array(
+        'ding_bookmark' => 'ding_bookmark',
+        'ding_reservation' => 0,
+        'ting_relation' => 'ting_relation',
+        'ting_sfx' => 0,
+      ),
+    ),
+    'type' => 'ding_entity_buttons_filtered',
     'weight' => '38',
   );
   $overrides["field.ting_object-ting_object-ding_entity_buttons.field_instance|display|ding_item_viewer_small"] = array(

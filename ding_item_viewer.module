@@ -529,3 +529,5 @@ function ding_item_viewer_field_formatter_view($entity_type, $entity, $field, $i
 
   return $element;
 }
+
+include_once 'ding_item_viewer.features.inc';
