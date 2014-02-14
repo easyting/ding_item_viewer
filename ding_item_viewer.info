@@ -8,10 +8,11 @@ project = ding_item_viewer
 dependencies[] = ding_item_cache
 dependencies[] = field_group
 dependencies[] = image
+dependencies[] = ding_entity_buttons_settings
 # This is weak dependency and can be ommited.
 dependencies[] = ultimate_cron
 configure = admin/config/ding/item_viewer
-explanation = Field type(s) in use - see <a href="/en/admin/reports/fields">Field list</a>
+explanation = Field type(s) in use - see <a href="/admin/reports/fields">Field list</a>
 features[ctools][] = field_group:field_group:1
 features[features_api][] = api:1
 features[features_override_items][] = field_group.group_data|ting_object|ting_object|ding_item_viewer_big
@@ -48,4 +49,3 @@ features[features_overrides][] = field_group.group_data|ting_object|ting_object|
 features[field_group][] = group_data|ting_object|ting_object|ding_item_viewer_big
 features[image][] = ding_item_viewer_image_big
 features[image][] = ding_item_viewer_image_small
-required = 1
