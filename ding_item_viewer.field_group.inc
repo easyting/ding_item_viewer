@@ -27,6 +27,7 @@ function ding_item_viewer_field_group_info() {
       1 => 'ting_author',
       2 => 'ting_subjects',
       3 => 'ding_entity_buttons',
+      4 => 'more_info',
     ),
     'format_type' => 'div',
     'format_settings' => array(

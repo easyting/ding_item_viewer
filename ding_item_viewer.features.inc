@@ -32,7 +32,7 @@ function ding_item_viewer_field_default_fields_alter(&$data) {
       'module' => 'ding_entity_buttons_settings',
       'settings' => array(
         'entity_action_active_buttons' => array(
-          'ding_bookmark' => 'ding_bookmark',
+          'ding_bookmark' => 0,
           'ding_reservation' => 0,
           'ting_relation' => 'ting_relation',
           'ting_sfx' => 0,
@@ -59,9 +59,11 @@ function ding_item_viewer_field_default_fields_alter(&$data) {
   if (isset($data['ting_object-ting_object-ting_abstract'])) {
     $data['ting_object-ting_object-ting_abstract']['field_instance']['display']['ding_item_viewer_big'] = array(
       'label' => 'hidden',
-      'module' => 'ting',
-      'settings' => array(),
-      'type' => 'ting_abstract_default',
+      'module' => 'ding_item_viewer',
+      'settings' => array(
+        'trim_length' => '400',
+      ),
+      'type' => 'ting_abstract_ding_item_viewer',
       'weight' => '35',
     ); /* WAS: '' */
     $data['ting_object-ting_object-ting_abstract']['field_instance']['display']['ding_item_viewer_small'] = array(
@@ -127,12 +129,6 @@ function ding_item_viewer_field_default_fields_alter(&$data) {
       'settings' => array(),
       'type' => 'hidden',
       'weight' => '35',
-    ); /* WAS: '' */
-    $data['ting_object-ting_object-ting_details_classification']['field_instance']['display']['ding_item_viewer_small'] = array(
-      'label' => 'above',
-      'settings' => array(),
-      'type' => 'hidden',
-      'weight' => '38',
     ); /* WAS: '' */
   }
   if (isset($data['ting_object-ting_object-ting_details_contributor'])) {
@@ -211,7 +207,7 @@ function ding_item_viewer_field_default_fields_alter(&$data) {
       'module' => 'ding_item_viewer',
       'settings' => array(),
       'type' => 'ting_subjects_ding_item_viewer',
-      'weight' => '37',
+      'weight' => '36',
     ); /* WAS: '' */
   }
   if (isset($data['ting_object-ting_object-ting_title'])) {
@@ -260,6 +256,15 @@ function ding_item_viewer_field_default_fields_alter(&$data) {
       'type' => 'hidden',
       'weight' => '18',
     ); /* WAS: '' */
+  }
+}
+
+/**
+ * Implements hook_field_group_info_alter().
+ */
+function ding_item_viewer_field_group_info_alter(&$data) {
+  if (isset($data['group_data|ting_object|ting_object|ding_item_viewer_big'])) {
+    $data['group_data|ting_object|ting_object|ding_item_viewer_big']->data['children']['4'] = 'more_info'; /* WAS: '' */
   }
 }
 

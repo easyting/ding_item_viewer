@@ -23,7 +23,7 @@ function ding_item_viewer_features_override_default_overrides() {
     'module' => 'ding_entity_buttons_settings',
     'settings' => array(
       'entity_action_active_buttons' => array(
-        'ding_bookmark' => 'ding_bookmark',
+        'ding_bookmark' => 0,
         'ding_reservation' => 0,
         'ting_relation' => 'ting_relation',
         'ting_sfx' => 0,
@@ -46,9 +46,11 @@ function ding_item_viewer_features_override_default_overrides() {
   );
   $overrides["field.ting_object-ting_object-ting_abstract.field_instance|display|ding_item_viewer_big"] = array(
     'label' => 'hidden',
-    'module' => 'ting',
-    'settings' => array(),
-    'type' => 'ting_abstract_default',
+    'module' => 'ding_item_viewer',
+    'settings' => array(
+      'trim_length' => '400',
+    ),
+    'type' => 'ting_abstract_ding_item_viewer',
     'weight' => '35',
   );
   $overrides["field.ting_object-ting_object-ting_abstract.field_instance|display|ding_item_viewer_small"] = array(
@@ -106,12 +108,6 @@ function ding_item_viewer_features_override_default_overrides() {
     'settings' => array(),
     'type' => 'hidden',
     'weight' => '35',
-  );
-  $overrides["field.ting_object-ting_object-ting_details_classification.field_instance|display|ding_item_viewer_small"] = array(
-    'label' => 'above',
-    'settings' => array(),
-    'type' => 'hidden',
-    'weight' => '38',
   );
   $overrides["field.ting_object-ting_object-ting_details_contributor.field_instance|display|ding_item_viewer_big"] = array(
     'label' => 'above',
@@ -172,7 +168,7 @@ function ding_item_viewer_features_override_default_overrides() {
     'module' => 'ding_item_viewer',
     'settings' => array(),
     'type' => 'ting_subjects_ding_item_viewer',
-    'weight' => '37',
+    'weight' => '36',
   );
   $overrides["field.ting_object-ting_object-ting_title.field_instance|display|ding_item_viewer_big"] = array(
     'label' => 'hidden',
@@ -213,6 +209,9 @@ function ding_item_viewer_features_override_default_overrides() {
     'type' => 'hidden',
     'weight' => '18',
   );
+
+  // Exported overrides for: field_group
+  $overrides["field_group.group_data|ting_object|ting_object|ding_item_viewer_big.data|children|4"] = 'more_info';
 
  return $overrides;
 }
