@@ -28,7 +28,7 @@ function ding_item_viewer_menu() {
     'description' => 'Sends rendered items over AJAX',
     'page callback' => 'ding_item_viewer_ajax',
     'page arguments' => array(),
-    'access arguments' => TRUE,
+    'access callback' => TRUE,
     'file' => 'ding_item_viewer.ajax.inc',
   );
 

@@ -25,6 +25,12 @@ function ding_item_viewer_field_default_fields_alter(&$data) {
       'type' => 'hidden',
       'weight' => '30',
     ); /* WAS: '' */
+    $data['ting_object-ting_object-ding_availability_holdings']['field_instance']['display']['ding_item_viewer_small'] = array(
+      'label' => 'above',
+      'settings' => array(),
+      'type' => 'hidden',
+      'weight' => 0,
+    ); /* WAS: '' */
   }
   if (isset($data['ting_object-ting_object-ding_entity_buttons'])) {
     $data['ting_object-ting_object-ding_entity_buttons']['field_instance']['display']['ding_item_viewer_big'] = array(
@@ -256,15 +262,6 @@ function ding_item_viewer_field_default_fields_alter(&$data) {
       'type' => 'hidden',
       'weight' => '18',
     ); /* WAS: '' */
-  }
-}
-
-/**
- * Implements hook_field_group_info_alter().
- */
-function ding_item_viewer_field_group_info_alter(&$data) {
-  if (isset($data['group_data|ting_object|ting_object|ding_item_viewer_big'])) {
-    $data['group_data|ting_object|ting_object|ding_item_viewer_big']->data['children']['4'] = 'more_info'; /* WAS: '' */
   }
 }
 

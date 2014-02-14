@@ -18,6 +18,12 @@ function ding_item_viewer_features_override_default_overrides() {
     'type' => 'hidden',
     'weight' => '30',
   );
+  $overrides["field.ting_object-ting_object-ding_availability_holdings.field_instance|display|ding_item_viewer_small"] = array(
+    'label' => 'above',
+    'settings' => array(),
+    'type' => 'hidden',
+    'weight' => 0,
+  );
   $overrides["field.ting_object-ting_object-ding_entity_buttons.field_instance|display|ding_item_viewer_big"] = array(
     'label' => 'hidden',
     'module' => 'ding_entity_buttons_settings',
@@ -209,9 +215,6 @@ function ding_item_viewer_features_override_default_overrides() {
     'type' => 'hidden',
     'weight' => '18',
   );
-
-  // Exported overrides for: field_group
-  $overrides["field_group.group_data|ting_object|ting_object|ding_item_viewer_big.data|children|4"] = 'more_info';
 
  return $overrides;
 }
