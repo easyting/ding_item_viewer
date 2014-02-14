@@ -1,7 +1,9 @@
 <?php
 /**
  * @file
- * Main module file for item viewer.
+ * Ding item viewer module.
+ *
+ * Shows ting items in form of a tabbed carousel.
  */
 
 /**
@@ -10,6 +12,7 @@
 function ding_item_viewer_menu() {
   $menu = array();
 
+  // Configuration page.
   $menu['admin/config/ding/item_viewer'] = array(
     'title' => 'Ding item viewer',
     'description' => 'Configure ding item viewer',
@@ -17,6 +20,16 @@ function ding_item_viewer_menu() {
     'page callback' => 'ding_item_viewer_admin_page',
     'page arguments' => array(),
     'file' => 'ding_item_viewer.admin.inc',
+  );
+
+  // AJAX handler.
+  $menu['ding_item_viewer'] = array(
+    'title' => 'Ding item viewer AJAX handler',
+    'description' => 'Sends rendered items over AJAX',
+    'page callback' => 'ding_item_viewer_ajax',
+    'page arguments' => array(),
+    'access arguments' => TRUE,
+    'file' => 'ding_item_viewer.ajax.inc',
   );
 
   return $menu;
@@ -30,7 +43,9 @@ function ding_item_viewer_permission() {
 
   $perm['manage item viewer'] = array(
     'title' => t('Manage ding item viewer'),
-    'description' => t('Configure ding item viewer settings such as search query and cache time.'),
+    'description' => t(
+      'Configure ding item viewer settings such as search query and cache time.'
+    ),
   );
 
   return $perm;
@@ -42,11 +57,42 @@ function ding_item_viewer_permission() {
 function ding_item_viewer_theme($existing, $type, $theme, $path) {
   $hooks = array();
 
+  $mod_path = drupal_get_path('module', 'ding_item_viewer');
+
+  $hooks['ding_item_viewer_admin_form'] = array(
+    'render element' => 'form',
+  );
+
+  $hooks['ding_item_viewer_container'] = array(
+    'variables' => array(
+      'url' => url('ding_item_viewer'),
+      'preload_image' => theme_image(
+        array(
+          'path' => $mod_path . '/img/loader.gif',
+          'alt' => t('Loading'),
+          'attributes' => array(),
+        )
+      ),
+    ),
+    'template' => 'templates/ding_item_viewer.container',
+  );
+
+  $hooks['item_viewer_tab_single'] = array(
+    'variables' => array(),
+    'template' => 'templates/ding_item_viewer.single-tab',
+  );
+
+  $hooks['item_viewer_tabs'] = array(
+    'variables' => array(),
+    'template' => 'templates/ding_item_viewer.tabs',
+  );
+
   $hooks['item_viewer_content'] = array(
     'variables' => array(),
-    'template' => 'ding_item_viewer.content',
-    'path' => $path . '/templates',
+    'template' => 'templates/ding_item_viewer.content',
   );
+
+  /// OLD themes.
 
   $hooks['ding_item_viewer_item'] = array(
     'variables' => array(),
@@ -58,22 +104,6 @@ function ding_item_viewer_theme($existing, $type, $theme, $path) {
     'variables' => array(),
     'template' => 'ding_item_viewer.item_active',
     'path' => $path . '/templates',
-  );
-
-  $hooks['item_viewer_tab_single'] = array(
-    'variables' => array(),
-    'template' => 'ding_item_viewer.single-tab',
-    'path' => $path . '/templates',
-  );
-
-  $hooks['item_viewer_tabs'] = array(
-    'variables' => array(),
-    'template' => 'ding_item_viewer.tabs',
-    'path' => $path . '/templates',
-  );
-
-  $hooks['ding_item_viewer_admin_form'] = array(
-    'render element' => 'form',
   );
 
   return $hooks;
@@ -101,79 +131,31 @@ function ding_item_viewer_block_view($delta) {
 
   switch ($delta) {
     case 'item_viewer':
+      // Load required JS and CSS files.
+      $mod_path = drupal_get_path('module', 'ding_item_viewer');
+      drupal_add_css($mod_path . '/css/ding_item_viewer.styles.css');
       drupal_add_library('system', 'drupal.ajax');
-      drupal_add_css(drupal_get_path('module', 'ding_item_viewer') . '/css/ding_item_viewer.styles.css');
-      $tabs = ding_item_viewer_build_tabs();
-      $output = ding_item_viewer_build_data();
-      $block['content'] = theme('item_viewer_content', array('tabs' => $tabs, 'data' => $output));
+      drupal_add_js($mod_path . '/js/ding_item_viewer.js');
+
+      // Covers will not load by default.
+      drupal_add_js(drupal_get_path('module', 'ting_covers') . '/js/ting-covers.js');
+
+      drupal_add_js(
+        array(
+          'ding_item_viewer' => array(
+            'visible_items' => 6,
+            'big_item_positon' => 3,
+          )
+        ),
+        'setting'
+      );
+
+
+      $block['content'] = theme('ding_item_viewer_container');
       break;
   }
 
   return $block;
-}
-
-/**
- * Build tabs for item viewer.
- *
- * @return
- *   Tabs layout markup.
- */
-function ding_item_viewer_build_tabs() {
-  $queries = variable_get('ding_item_viewer_search_queries');
-
-  $tabs = '';
-
-  if (is_array($queries)) {
-    foreach ($queries as $k => $query) {
-      $tabs .= theme('item_viewer_tab_single', array('tab_index' => $k, 'tab_title' => $query['title']));
-    }
-  }
-
-  return theme('item_viewer_tabs', array('tabs' => $tabs));
-}
-
-/**
- * Build ting related data.
- *
- * This entry fetches all needed objects and outputs the result as a json string
- * into JS script for further use.
- */
-function ding_item_viewer_build_data() {
-  $queries = variable_get('ding_item_viewer_search_queries');
-  $count = variable_get('ding_item_viewer_item_limit', 24);
-  $sort = variable_get('ding_item_viewer_item_sorting', '');
-  $ttl = variable_get('ding_item_viewer_cache_ttl', 1);
-  $output = array();
-
-  if (is_array($queries)) {
-    foreach ($queries as $query) {
-      $cid = ding_item_viewer_generate_cache_id($query['query']);
-      $cache = cache_get($cid);
-
-      if (!$cache) {
-        $objects = ding_item_viewer_get_objects($query['query'], $count, FALSE, $sort);
-        cache_set($cid, $objects);
-      }
-      else {
-        $objects = $cache->data;
-      }
-
-      // Check if cover images are physically present.
-      try {
-        ding_item_viewer_create_missed_covers($objects);
-        $output[] = $objects;
-      }
-      catch (Exception $e) {
-        // No special handling at the moment.
-      }
-    }
-
-    drupal_add_js(drupal_get_path('module', 'ding_item_viewer') . '/js/ding_item_viewer.js');
-    drupal_add_js(drupal_get_path('module', 'ding_reservation') . '/js/ding_reservation_scripts.js');
-    drupal_add_js(array('ding_item_viewer' => array('ting_objects' => drupal_json_encode($output))), 'setting');
-  }
-
-  return $output;
 }
 
 /**
@@ -188,6 +170,7 @@ function ding_item_viewer_get_objects($query = '', $count = 0, $no_cover = FALSE
   $objects = array();
   $request = '(' . $query . ')';
   $page = 1;
+
 
   if (!empty($query) && !empty($count)) {
     module_load_include('client.inc', 'ting');
@@ -217,105 +200,8 @@ function ding_item_viewer_get_objects($query = '', $count = 0, $no_cover = FALSE
             break;
           }
 
-          $item = new stdClass();
-          $item->id = $searchItem->id;
-          $item->localId = $searchItem->localId;
-          $item->isbn = isset($searchItem->record['dc:identifier']['dkdcplus:ISBN']) ?
-                        _ding_item_viewer_format_isbn($searchItem->record['dc:identifier']['dkdcplus:ISBN']) : NULL;
-          $item->ac_source = isset($searchItem->record['ac:source'][''][0]) ?
-                             $searchItem->record['ac:source'][''][0] : NULL;
-          $item->dc_source = isset($searchItem->record['dc:source'][''][0]) ?
-                             $searchItem->record['dc:source'][''][0] : NULL;
-          $item->title = $searchItem->record['dc:title'][''][0];
-
-          if (isset($searchItem->record['dc:creator'])) {
-            if (isset($searchItem->record['dc:creator']['oss:aut'][0])) {
-              $item->creator = $searchItem->record['dc:creator']['oss:aut'][0];
-            }
-            elseif (isset($searchItem->record['dc:creator']['oss:mus'][0])) {
-              $item->creator = $searchItem->record['dc:creator']['oss:mus'][0];
-            }
-            elseif (isset($searchItem->record['dc:creator']['oss:sort'][0])) {
-              $item->creator = $searchItem->record['dc:creator']['oss:sort'][0];
-            }
-            else {
-              $item->creator = NULL;
-            }
-          }
-          else {
-            $item->creator = NULL;
-          }
-
-          if (isset($searchItem->record['dc:subject']['dkdcplus:DK5-Text'][0])) {
-            $item->subject = $searchItem->record['dc:subject']['dkdcplus:DK5-Text'][0];
-          }
-          elseif (isset($searchItem->record['dc:subject']['oss:genre'][0])) {
-            $item->subject = $searchItem->record['dc:subject']['oss:genre'][0];
-          }
-          elseif (isset($searchItem->record['dc:subject'][''][0])) {
-            $item->subject = $searchItem->record['dc:subject'][''][0];
-          }
-          else {
-            $item->subject = NULL;
-          }
-
-          // Set image filepath.
-          // Image existence will be checked further.
-          $item->image_uri = ting_covers_object_path($searchItem->localId);
-          $item->image = file_create_url($item->image_uri);
-
-          if (isset($searchItem->record['dc:description'][''][0])) {
-            $item->description = $searchItem->record['dc:description'][''][0];
-          }
-          elseif (isset($searchItem->record['dcterms:abstract'][''][0])) {
-            $item->description = $searchItem->record['dcterms:abstract'][''][0];
-          }
-          elseif (isset($searchItem->record['dcterms:hasPart'])) {
-            $item->description = $searchItem->record['dcterms:hasPart']['oss:track'];
-          }
-          else {
-            $item->description = '';
-          }
-
-          $item->year = isset($searchItem->record['dc:date'][''][0]) ?
-                        $searchItem->record['dc:date'][''][0] : NULL;
-          // Default values
-          $item->type = 1;
-          $item->rating = 0;
-          $item->rating_count = 0;
-          $item->comment_count = 0;
-          $item->has_rating = FALSE;
-
-          $objects[$searchItem->localId] = $item;
+          $objects[$searchItem->localId] = ding_entity_load($searchItem->id);
           break;
-        }
-      }
-    }
-
-    // Make an array of local id's, fetchable by voxb
-    if (module_exists('ding_voxb')) {
-      $local_ids = array();
-      foreach ($objects as $local_id => $v) {
-        if (!empty($v->isbn)) {
-          $local_ids[$local_id] = $v->isbn[0];
-        }
-      }
-
-      // Fetch details from voxb
-      $voxb_details = new VoxbItems();
-      $voxb_details->addReviewHandler('review', new VoxbReviews());
-      $response = $voxb_details->fetchByISBN($local_ids);
-
-      // Assign voxb details to items
-      if ($response && $voxb_details->getCount() > 0) {
-        foreach ($local_ids as $local_id => $isbn) {
-          $detail = $voxb_details->getItem($isbn);
-          if ($detail) {
-            $objects[$local_id]->rating = (int) round($detail->getRating() / 20);
-            $objects[$local_id]->rating_count = $detail->getRatingCount();
-            $objects[$local_id]->comment_count = $detail->getReviews('review')->getCount();
-            $objects[$local_id]->has_rating = TRUE;
-          }
         }
       }
     }
@@ -359,19 +245,31 @@ function ding_item_viewer_search_ting($query = '', $page = 1, $records = 10, $so
  *
  * @param $local_id
  *   Ting item local id.
- * @return
+ *
+ * @return bool
  *   TRUE if item has a cover, FALSE otherwise.
  */
 function ding_item_viewer_check_cover($local_id) {
-  $service = new AdditionalInformationService(variable_get('addi_wsdl_url'), variable_get('addi_username'), variable_get('addi_group'), variable_get('addi_password'));
+  $cid = 'ding_item_viewer_cover-check-' . $local_id;
+  $cache = cache_get($cid);
+  $value = NULL;
 
-  $cover = $service->getByFaustNumber($local_id);
-
-  if (isset($cover[$local_id])) {
-    return TRUE;
+  if (!$cache) {
+    $service = new AdditionalInformationService(
+      variable_get('addi_wsdl_url'),
+      variable_get('addi_username'),
+      variable_get('addi_group'),
+      variable_get('addi_password')
+    );
+    $cover = $service->getByFaustNumber($local_id);
+    $value = isset($cover[$local_id]);
+    cache_set($cid, $value);
+  }
+  else {
+    $value = $cache->data;
   }
 
-  return FALSE;
+  return $value;
 }
 
 /**
@@ -533,3 +431,202 @@ function ding_item_viewer_cronapi($op, $function = NULL) {
 
   }
 }
+
+/**
+ * Implements hook_entity_info_alter().
+ *
+ * Set special view modes for item viewer.
+ */
+function ding_item_viewer_entity_info_alter(&$entity_info) {
+  $entity_info['ting_object']['view modes'] += array(
+    'ding_item_viewer_small' => array(
+      'label' => t('Ding item viewer (small)'),
+      'custom settings' => TRUE,
+    ),
+    'ding_item_viewer_big' => array(
+      'label' => t('Ding item viewer (big)'),
+      'custom settings' => TRUE,
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function ding_item_viewer_field_formatter_info() {
+  $formatters = array();
+
+  $formatters['ting_author_ding_item_viewer'] = array(
+    'label' => t('Ding item viewer'),
+    'description' => t('Show authors as plain text (without links)'),
+    'field types' => array(
+      'ting_author',
+    ),
+  );
+
+  $formatters['ting_subjects_ding_item_viewer'] = array(
+    'label' => t('Ding item viewer'),
+    'description' => t('Show one subject'),
+    'field types' => array(
+      'ting_subjects',
+    ),
+  );
+
+  $formatters['ting_abstract_ding_item_viewer'] = array(
+    'label' => t('Ding item viewer'),
+    'description' => t('Show trimmed abstract'),
+    'settings' => array('trim_length' => 600),
+    'field types' => array(
+      'ting_abstract',
+    ),
+  );
+
+  $formatters['ting_object_more_info_default'] = array(
+    'label' => t('Default'),
+    'description' => t('Link to Ting object'),
+    'field types' => array(
+      'ting_object_more_info',
+    ),
+  );
+
+  return $formatters;
+}
+
+/**
+ * Implements hook_field_formatter_settings_form().
+ */
+function ding_item_viewer_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+
+  $element = array();
+
+  if ($display['type'] == 'ting_abstract_ding_item_viewer') {
+    $element['trim_length'] = array(
+      '#title' => t('Trim length'),
+      '#type' => 'textfield',
+      '#size' => 10,
+      '#default_value' => $settings['trim_length'],
+      '#element_validate' => array('element_validate_integer_positive'),
+      '#required' => TRUE,
+    );
+  }
+
+  return $element;
+}
+
+/**
+ * Implements hook_field_formatter_settings_summary().
+ */
+function ding_item_viewer_field_formatter_settings_summary($field, $instance, $view_mode) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+
+  $summary = '';
+
+  if ($display['type'] == 'ting_abstract_ding_item_viewer') {
+    $summary = t('Trim length') . ': ' . $settings['trim_length'];
+  }
+
+  return $summary;
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function ding_item_viewer_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = array();
+
+  foreach ($items as $delta => $item) {
+    switch ($display['type']) {
+      // Use same logic as for default view, but without adding URLs.
+      case 'ting_author_ding_item_viewer':
+        $creator = NULL;
+        if (isset($entity->reply->record['dc:creator'])) {
+          if (isset($entity->reply->record['dc:creator']['oss:aut'][0])) {
+            $creator = $entity->reply->record['dc:creator']['oss:aut'][0];
+          }
+          elseif (isset($entity->reply->record['dc:creator']['oss:mus'][0])) {
+            $creator = $entity->reply->record['dc:creator']['oss:mus'][0];
+          }
+          elseif (isset($entity->reply->record['dc:creator']['oss:sort'][0])) {
+            $creator = $entity->reply->record['dc:creator']['oss:sort'][0];
+          }
+        }
+
+        $element[$delta] = array('#markup' => $creator);
+        break;
+
+      case 'ting_subjects_ding_item_viewer':
+        $subject = NULL;
+        if (isset($entity->reply->record['dc:subject']['dkdcplus:DK5-Text'][0])) {
+          $subject = $entity->reply->record['dc:subject']['dkdcplus:DK5-Text'][0];
+        }
+        elseif (isset($entity->reply->record['dc:subject']['oss:genre'][0])) {
+          $subject = $entity->reply->record['dc:subject']['oss:genre'][0];
+        }
+        elseif (isset($entity->reply->record['dc:subject'][''][0])) {
+          $subject = $entity->reply->record['dc:subject'][''][0];
+        }
+
+        if ($subject) {
+          $subject = l(
+            $subject,
+            'search/ting/dc.subject="' . $subject . '"',
+            array('attributes' => array('class' => array('subject')))
+          );
+        }
+
+        $element[$delta] = array(
+          '#markup' => $subject,
+        );
+        break;
+
+      case 'ting_abstract_ding_item_viewer':
+        $abstract = check_plain($entity->abstract);
+        $output = text_summary($abstract, NULL, $display['settings']['trim_length']);
+        if ($abstract != $output) {
+          $output .= ' ...';
+        }
+        $element[$delta] = array('#markup' => $output);
+        break;
+
+      case 'ting_object_more_info_default':
+        $link = l(t('More info'), 'ting/object/' . $entity->ding_entity_id);
+        $element[$delta] = array(
+          '#markup' => $link,
+        );
+        break;
+
+    }
+  }
+
+  return $element;
+}
+
+/**
+ * Implements hook_field_info().
+ */
+function ding_item_viewer_field_info() {
+  return array(
+    'ting_object_more_info' => array(
+      'label' => t('More info link'),
+      'description' => t('Link to Ting object'),
+      'default_widget' => 'hidden',
+      'default_formatter' => 'ting_object_more_info_default',
+      'no_ui' => TRUE,
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_load().
+ */
+function ding_item_viewer_field_load($entity_type, $entities, $field, $instances, $langcode, &$items, $age) {
+  foreach ($entities as $id => $entity) {
+    $items[$id][0]['safe_value'] = t('More info');
+    $items[$id][0]['value'] = t('More info');
+  }
+}
+
+include_once 'ding_item_viewer.features.inc';
