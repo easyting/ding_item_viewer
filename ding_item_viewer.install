@@ -12,3 +12,61 @@ function ding_item_viewer_uninstall() {
   variable_del('ding_item_viewer_search_queries');
   variable_del('ding_item_viewer_cache_ttl');
 }
+
+/**
+ * Implements hook_install();
+ */
+function ding_item_viewer_install() {
+  ding_item_viewer_create_field();
+}
+
+/**
+ * Add 'More info' field.
+ */
+function ding_item_viewer_update_7001() {
+  ding_item_viewer_create_field();
+}
+
+function ding_item_viewer_create_field() {
+  $field_name = 'more_info';
+
+  $field = field_info_field($field_name);
+  if ($field) {
+    $instance = field_info_instance('ting_object', $field_name, 'ting_object');
+    field_purge_instance($instance);
+    field_purge_field($field);
+  }
+
+  $field = array(
+    'field_name' => $field_name,
+    'type' => 'ting_object_more_info',
+    'locked' => FALSE,
+    'default_widget' => 'hidden',
+    'no_ui' => TRUE,
+    'entity_types' => array('ting_object'),
+    'storage' => array(
+      'type' => 'virtual_field',
+    ),
+  );
+  field_create_field($field);
+
+  $instance = array(
+    'field_name' => $field_name,
+    'label' => 'More info',
+    'bundle' => 'ting_object',
+    'entity_type' => 'ting_object',
+    'widget' => array(
+      'type' => 'hidden',
+    ),
+    'formatter' => array(
+      'type' => 'ting_object_more_info_default',
+    ),
+    'display' => array(
+      'ding_item_viewer_big' => array(
+        'label' => 'hidden',
+      ),
+    ),
+  );
+
+  field_create_instance($instance);
+}

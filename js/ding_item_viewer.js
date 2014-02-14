@@ -11,6 +11,7 @@
     // Load data from server.
     container = $('.ding-item-viewer');
     $.get(container.data('url'), container_callback);
+    $('a.tab', container).live('click', tab_change);
   });
 
   /**
@@ -23,6 +24,7 @@
       container.html(response.data.content);
       container.append(response.data.tabs);
       items = response.data.items;
+
       prepare_data();
       show_items();
     }
@@ -91,11 +93,15 @@
       item.data('index', index);
       // Show item.
       item.addClass('browsebar-item');
+
       content.append(item);
     }
     // Add first/last classes.
     content.find(':first').addClass('first');
     content.find(':last').addClass('last');
+
+    // @todo Get rid of AJAX image fetching.
+    Drupal.attachBehaviors(content);
   }
 
   /**
@@ -121,5 +127,18 @@
     return false;
   }
 
+  /**
+   * Tab click event handler.
+   *
+   * Changes shown tab.
+   */
+  function tab_change(e) {
+    e.preventDefault();
+
+    starting_item = 0;
+    current_tab = $(this).data('tab');
+
+    show_items();
+  }
 })(jQuery);
 

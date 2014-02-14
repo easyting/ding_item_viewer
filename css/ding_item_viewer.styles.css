@@ -7,7 +7,7 @@
 }
 
 .browsebar-inner {
-  height: 335px;
+  height: 375px;
   margin: 10px auto 0;
   overflow: hidden;
   padding: 0 0 10px 0;
@@ -184,20 +184,6 @@
   overflow: hidden;
 }
 
-.browsebar-inner .active-item-title .active-title {
-  font: 28px 'Soho Gothic W01 Bold', Helvetica, Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-}
-
-.browsebar-inner .properties-wrapper .active-author {
-  color: #53514b;
-  display: block;
-  font: 11px 'Soho Gothic W01 Regular', Helvetica, Arial, sans-serif;
-  margin: 0 0 8px 0;
-  text-transform: uppercase;
-}
-
 .browsebar-inner .properties-wrapper .active-description {
   display: block;
   font: 11px/16px 'Soho Gothic W01 Regular', Helvetica, Arial, sans-serif;
@@ -303,3 +289,29 @@
   margin-top: -5px;
   padding-top: 5px;
 }
+
+/* Active item */
+.ding-item-viewer .browsebar-item.active .field-type-ting-cover {
+  float: left;
+  margin-right: 10px;
+}
+
+.ding-item-viewer .browsebar-item.active .field-type-ting-author {
+  color: #53514b;
+  display: block;
+  font: 11px 'Soho Gothic W01 Regular', Helvetica, Arial, sans-serif;
+  margin: 0 0 8px 0;
+  text-transform: uppercase;
+}
+
+.ding-item-viewer .browsebar-item.active .field-type-ting-title {
+  font: 28px 'Soho Gothic W01 Bold', Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.ding-item-viewer .browsebar-item.active .field-type-ding-entity-buttons {
+  margin-top: 10px;
+}
+
+/* End active item */

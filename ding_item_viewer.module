@@ -136,6 +136,10 @@ function ding_item_viewer_block_view($delta) {
       drupal_add_css($mod_path . '/css/ding_item_viewer.styles.css');
       drupal_add_library('system', 'drupal.ajax');
       drupal_add_js($mod_path . '/js/ding_item_viewer.js');
+
+      // Covers will not load by default.
+      drupal_add_js(drupal_get_path('module', 'ting_covers') . '/js/ting-covers.js');
+
       drupal_add_js(
         array(
           'ding_item_viewer' => array(
@@ -446,8 +450,6 @@ function ding_item_viewer_entity_info_alter(&$entity_info) {
   );
 }
 
-// ting_author - no Yea
-
 /**
  * Implements hook_field_formatter_info().
  */
@@ -462,7 +464,6 @@ function ding_item_viewer_field_formatter_info() {
     ),
   );
 
-  // @todo Improvement: Create a setting to limit number of subjects shown.
   $formatters['ting_subjects_ding_item_viewer'] = array(
     'label' => t('Ding item viewer'),
     'description' => t('Show one subject'),
@@ -471,7 +472,63 @@ function ding_item_viewer_field_formatter_info() {
     ),
   );
 
+  $formatters['ting_abstract_ding_item_viewer'] = array(
+    'label' => t('Ding item viewer'),
+    'description' => t('Show trimmed abstract'),
+    'settings' => array('trim_length' => 600),
+    'field types' => array(
+      'ting_abstract',
+    ),
+  );
+
+  $formatters['ting_object_more_info_default'] = array(
+    'label' => t('Default'),
+    'description' => t('Link to Ting object'),
+    'field types' => array(
+      'ting_object_more_info',
+    ),
+  );
+
   return $formatters;
+}
+
+/**
+ * Implements hook_field_formatter_settings_form().
+ */
+function ding_item_viewer_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+
+  $element = array();
+
+  if ($display['type'] == 'ting_abstract_ding_item_viewer') {
+    $element['trim_length'] = array(
+      '#title' => t('Trim length'),
+      '#type' => 'textfield',
+      '#size' => 10,
+      '#default_value' => $settings['trim_length'],
+      '#element_validate' => array('element_validate_integer_positive'),
+      '#required' => TRUE,
+    );
+  }
+
+  return $element;
+}
+
+/**
+ * Implements hook_field_formatter_settings_summary().
+ */
+function ding_item_viewer_field_formatter_settings_summary($field, $instance, $view_mode) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+
+  $summary = '';
+
+  if ($display['type'] == 'ting_abstract_ding_item_viewer') {
+    $summary = t('Trim length') . ': ' . $settings['trim_length'];
+  }
+
+  return $summary;
 }
 
 /**
@@ -524,10 +581,52 @@ function ding_item_viewer_field_formatter_view($entity_type, $entity, $field, $i
           '#markup' => $subject,
         );
         break;
+
+      case 'ting_abstract_ding_item_viewer':
+        $abstract = check_plain($entity->abstract);
+        $output = text_summary($abstract, NULL, $display['settings']['trim_length']);
+        if ($abstract != $output) {
+          $output .= ' ...';
+        }
+        $element[$delta] = array('#markup' => $output);
+        break;
+
+      case 'ting_object_more_info_default':
+        $link = l(t('More info'), 'ting/object/' . $entity->ding_entity_id);
+        $element[$delta] = array(
+          '#markup' => $link,
+        );
+        break;
+
     }
   }
 
   return $element;
+}
+
+/**
+ * Implements hook_field_info().
+ */
+function ding_item_viewer_field_info() {
+  return array(
+    'ting_object_more_info' => array(
+      'label' => t('More info link'),
+      'description' => t('Link to Ting object'),
+      'default_widget' => 'hidden',
+      'default_formatter' => 'ting_object_more_info_default',
+      'no_ui' => TRUE,
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_load().
+ */
+function ding_item_viewer_field_load($entity_type, $entities, $field, $instances, $langcode, &$items, $age) {
+  foreach ($entities as $id => $entity) {
+    $items[$id][0]['safe_value'] = t('More info');
+    $items[$id][0]['value'] = t('More info');
+  }
 }
 
 include_once 'ding_item_viewer.features.inc';
