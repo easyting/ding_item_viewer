@@ -6,6 +6,8 @@
  * Shows ting items in form of a tabbed carousel.
  */
 
+define('DING_ITEM_VIEWER_RESULT', 'ding_item_viewer_result');
+
 /**
  * Implements hook_menu().
  */
@@ -29,7 +31,12 @@ function ding_item_viewer_menu() {
     'page callback' => 'ding_item_viewer_ajax',
     'page arguments' => array(),
     'access callback' => TRUE,
-    'file' => 'ding_item_viewer.ajax.inc',
+  );
+  $menu['ding_item_viewer_get_data'] = array(
+    'title' => 'Ding item viewer data AJAX handler',
+    'page callback' => 'ding_item_viewer_get_data',
+    'page arguments' => array(),
+    'access callback' => TRUE,
   );
 
   return $menu;
@@ -92,8 +99,6 @@ function ding_item_viewer_theme($existing, $type, $theme, $path) {
     'template' => 'templates/ding_item_viewer.content',
   );
 
-  /// OLD themes.
-
   $hooks['ding_item_viewer_item'] = array(
     'variables' => array(),
     'template' => 'ding_item_viewer.item',
@@ -137,19 +142,21 @@ function ding_item_viewer_block_view($delta) {
       drupal_add_library('system', 'drupal.ajax');
       drupal_add_js($mod_path . '/js/ding_item_viewer.js');
 
-      // Covers will not load by default.
-      drupal_add_js(drupal_get_path('module', 'ting_covers') . '/js/ting-covers.js');
+      // Other modules do not work without it.
+      drupal_add_library('system', 'drupal.ajax');
+      drupal_add_library('system', 'jquery.form');
+      drupal_add_js(drupal_get_path('module', 'ding_availability') . '/js/ding_availability_lib.js');
+      drupal_add_js(drupal_get_path('module', 'ding_reservation') . '/js/ding_reservation_scripts.js');
 
       drupal_add_js(
         array(
           'ding_item_viewer' => array(
             'visible_items' => 6,
             'big_item_positon' => 3,
-          )
+          ),
         ),
         'setting'
       );
-
 
       $block['content'] = theme('ding_item_viewer_container');
       break;
@@ -161,36 +168,42 @@ function ding_item_viewer_block_view($delta) {
 /**
  * Get ting objects.
  *
- * @param $query
+ * @param string $query
  *   Search query string.
- * @param $count
+ * @param int $count
  *   Number of objects to search.
+ * @param bool $no_cover
+ *   FALSE if item must have cover.
+ * @param string $sort
+ *   Sorting order.
+ *
+ * @return array
+ *   Ting objects.
  */
 function ding_item_viewer_get_objects($query = '', $count = 0, $no_cover = FALSE, $sort = '') {
   $objects = array();
   $request = '(' . $query . ')';
   $page = 1;
 
-
   if (!empty($query) && !empty($count)) {
     module_load_include('client.inc', 'ting');
-    // Search with portions of 10 items
+    // Search with portions of 10 items.
     while ($result = ding_item_viewer_search_ting($request, $page++, 10, $sort)) {
-      // This query is out of results OR we have needed amount of items
+      // This query is out of results OR we have needed amount of items.
       if ($result->numTotalCollections == 0 || count($objects) == $count) {
         break;
       }
 
       foreach ($result->collections as $collection) {
-        // Whether we reached our item limit per query
+        // Whether we reached our item limit per query.
         if (count($objects) == $count) {
           break;
         }
 
-        foreach ($collection->reply->objects as $searchItem) {
+        foreach ($collection->reply->objects as $search_item) {
           // No cover for this item? Skip it!
           try {
-            $cover_exists = ding_item_viewer_check_cover($searchItem->localId);
+            $cover_exists = ding_item_viewer_check_cover($search_item->localId);
           }
           catch (Exception $e) {
             break;
@@ -200,7 +213,7 @@ function ding_item_viewer_get_objects($query = '', $count = 0, $no_cover = FALSE
             break;
           }
 
-          $objects[$searchItem->localId] = ding_entity_load($searchItem->id);
+          $objects[$search_item->localId] = ding_entity_load($search_item->id);
           break;
         }
       }
@@ -213,14 +226,17 @@ function ding_item_viewer_get_objects($query = '', $count = 0, $no_cover = FALSE
 /**
  * Perform ting search.
  *
- * @param $query
+ * @param string $query
  *   Searched query string.
- * @param $page
+ * @param int $page
  *   Requested results page.
- * @param $records
+ * @param int $records
  *   Number of records to fetch.
- * @return
- *   Ting search result object.
+ * @param string $sort
+ *   Sorting order.
+ *
+ * @return object|bool
+ *   Ting search result object or FALSE.
  */
 function ding_item_viewer_search_ting($query = '', $page = 1, $records = 10, $sort = '') {
   if (!empty($query)) {
@@ -243,7 +259,7 @@ function ding_item_viewer_search_ting($query = '', $page = 1, $records = 10, $so
 /**
  * Check for cover existence.
  *
- * @param $local_id
+ * @param string $local_id
  *   Ting item local id.
  *
  * @return bool
@@ -275,7 +291,7 @@ function ding_item_viewer_check_cover($local_id) {
 /**
  * Create missed covers.
  *
- * @param $items
+ * @param array $items
  *   Set of ting objects.
  */
 function ding_item_viewer_create_missed_covers(&$items) {
@@ -294,11 +310,12 @@ function ding_item_viewer_create_missed_covers(&$items) {
 /**
  * Get images from ADDI web-service.
  *
- * @param $items
+ * @param array $items
  *   Set of ting objects.
- * @param $missing_images_local_ids
+ * @param array $missing_images_local_ids
  *   Array of ting items id's with missing covers.
- * @return
+ *
+ * @return array
  *   Set of ting objects, with image path attached.
  */
 function ding_item_viewer_get_images_from_addi(&$items, $missing_images_local_ids) {
@@ -314,7 +331,7 @@ function ding_item_viewer_get_images_from_addi(&$items, $missing_images_local_id
   }
 
   foreach ($missing_images_local_ids as $local_id) {
-    // Try to extract the image url from the result
+    // Try to extract the image url from the result.
     $source_url = FALSE;
     if (isset($additional_informations[$local_id]) && $ai = $additional_informations[$local_id]) {
       if ($ai->detailUrl) {
@@ -325,11 +342,11 @@ function ding_item_viewer_get_images_from_addi(&$items, $missing_images_local_id
       }
     }
 
-    // Try to download the image locally
+    // Try to download the image locally.
     $file = _ting_covers_pages_fetch_image(ting_covers_object_path($local_id), $source_url);
 
     if ($file) {
-      //Generate a path corresponding to the downloaded image, styled
+      // Generate a path corresponding to the downloaded image, styled.
       $items[$local_id]->image = file_create_url($file);
     }
     else {
@@ -364,7 +381,8 @@ function ding_item_viewer_ding_item_cache() {
 
 /**
  * Format ISBN number.
- * Remove all spaces and dashes.
+ *
+ * Removes all spaces and dashes.
  *
  * @param string $isbn
  *   Unformated ISBN number.
@@ -390,7 +408,6 @@ function ding_item_viewer_cronapi($op, $function = NULL) {
   switch ($op) {
     case 'list':
       return array('ding_item_viewer_warm_cache' => 'Cache warmer');
-
     break;
 
     case 'rule':
@@ -489,6 +506,13 @@ function ding_item_viewer_field_formatter_info() {
     ),
   );
 
+  $formatters['ting_cover_ding_item_viewer'] = array(
+    'label' => t('Ding item viewer'),
+    'description' => t('Cover image without ajax'),
+    'field types' => array('ting_cover'),
+    'settings' => array('image_style' => 'thumbnail'),
+  );
+
   return $formatters;
 }
 
@@ -512,6 +536,16 @@ function ding_item_viewer_field_formatter_settings_form($field, $instance, $view
     );
   }
 
+  if ($display['type'] == 'ting_cover_ding_item_viewer') {
+    return ting_covers_field_formatter_settings_form(
+      $field,
+      $instance,
+      $view_mode,
+      $form,
+      $form_state
+    );
+  }
+
   return $element;
 }
 
@@ -526,6 +560,14 @@ function ding_item_viewer_field_formatter_settings_summary($field, $instance, $v
 
   if ($display['type'] == 'ting_abstract_ding_item_viewer') {
     $summary = t('Trim length') . ': ' . $settings['trim_length'];
+  }
+
+  if ($display['type'] == 'ting_cover_ding_item_viewer') {
+    return ting_covers_field_formatter_settings_summary(
+      $field,
+      $instance,
+      $view_mode
+    );
   }
 
   return $summary;
@@ -598,6 +640,26 @@ function ding_item_viewer_field_formatter_view($entity_type, $entity, $field, $i
         );
         break;
 
+      case 'ting_cover_ding_item_viewer':
+        module_load_include('inc', 'ting_covers', 'ting_covers.pages');
+        list($owner_id, $local_id) = explode(':', $entity->ding_entity_id);
+        $cover_data = array(
+          array(
+            'image_style' => $display['settings']['image_style'],
+            'local_id' => $local_id,
+            'owner_id' => $owner_id,
+          ),
+        );
+        $images = ting_covers_objects(FALSE, $cover_data);
+        $element[$delta] = array(
+          '#theme' => 'image',
+          '#path' => $images[0]['url'],
+          '#width' => '',
+          '#height' => '',
+          '#alt' => '',
+          '#title' => '',
+        );
+        break;
     }
   }
 
@@ -627,6 +689,131 @@ function ding_item_viewer_field_load($entity_type, $entities, $field, $instances
     $items[$id][0]['safe_value'] = t('More info');
     $items[$id][0]['value'] = t('More info');
   }
+}
+
+/**
+ * Build widget data.
+ */
+function ding_item_viewer_get_data() {
+  if (variable_get(DING_ITEM_VIEWER_RESULT, FALSE)) {
+    return 'BUSY';
+  }
+
+  watchdog('div_ajax', 'Started ding_item_viewer_get_data');
+  variable_set(DING_ITEM_VIEWER_RESULT, TRUE);
+  $result = array(
+    'tabs' => ding_item_viewer_build_tabs(),
+    'content' => theme('item_viewer_content'),
+    'items' => ding_item_viewer_build_data(),
+  );
+  cache_set(DING_ITEM_VIEWER_RESULT, $result);
+  watchdog('div_ajax', 'Finished ding_item_viewer_get_data');
+  variable_delete(DING_ITEM_VIEWER_RESULT);
+  return $result;
+}
+
+/**
+ * Build tabs for item viewer.
+ *
+ * @return string
+ *   Tabs layout markup.
+ */
+function ding_item_viewer_build_tabs() {
+  $queries = variable_get('ding_item_viewer_search_queries');
+
+  $tabs = '';
+
+  if (is_array($queries)) {
+    foreach ($queries as $k => $query) {
+      $tabs .= theme('item_viewer_tab_single', array('tab_index' => $k, 'tab_title' => $query['title']));
+    }
+  }
+
+  return theme('item_viewer_tabs', array('tabs' => $tabs));
+}
+
+/**
+ * Build ting related data.
+ *
+ * This entry fetches all needed objects and outputs the result as a json string
+ * into JS script for further use.
+ */
+function ding_item_viewer_build_data() {
+  $queries = variable_get('ding_item_viewer_search_queries');
+  $count = variable_get('ding_item_viewer_item_limit', 24);
+  $sort = variable_get('ding_item_viewer_item_sorting', '');
+  // Cache time in hours.
+  $ttl = variable_get('ding_item_viewer_cache_ttl', 0) * 3600;
+
+  $result = array();
+
+  if (is_array($queries)) {
+    $tab = 0;
+    foreach ($queries as $query) {
+      $cid = ding_item_viewer_generate_cache_id($query['query']);
+      $cache = cache_get($cid);
+
+      if (!$cache) {
+        $objects = ding_item_viewer_get_objects($query['query'], $count, FALSE, $sort);
+        $items = array();
+        foreach ($objects as $item) {
+          $build = ting_object_view($item, 'ding_item_viewer_small');
+          $small = drupal_render($build);
+          $build = ting_object_view($item, 'ding_item_viewer_big');
+          $big = drupal_render($build);
+          $items[$item->localId] = array(
+            'small' => $small,
+            'big' => $big,
+          );
+        }
+
+        // Cache rendered items.
+        cache_set($cid, $items, 'cache', REQUEST_TIME + $ttl);
+      }
+      else {
+        $items = $cache->data;
+      }
+      $result[$tab] = $items;
+      $tab++;
+    }
+  }
+
+  return $result;
+}
+
+/**
+ * Implements hook_flush_caches().
+ */
+function ding_item_viewer_flush_caches() {
+  // Remove local lock variable.
+  variable_delete(DING_ITEM_VIEWER_RESULT);
+}
+
+/**
+ * AJAX handler.
+ */
+function ding_item_viewer_ajax() {
+  $response = array(
+    'status' => 'OK',
+    'data' => array(),
+    'error' => '',
+  );
+
+  $cache = cache_get(DING_ITEM_VIEWER_RESULT);
+  if (!$cache) {
+    $result = ding_item_viewer_get_data();
+    if ($result == 'BUSY') {
+      $response['status'] = $result;
+    }
+    else {
+      $response['data'] = $result;
+    }
+  }
+  else {
+    $response['data'] = $cache->data;
+  }
+
+  drupal_json_output($response);
 }
 
 include_once 'ding_item_viewer.features.inc';

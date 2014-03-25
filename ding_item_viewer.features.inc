@@ -39,9 +39,9 @@ function ding_item_viewer_field_default_fields_alter(&$data) {
       'settings' => array(
         'entity_action_active_buttons' => array(
           'ding_bookmark' => 0,
-          'ding_reservation' => 0,
+          'ding_reservation' => 'ding_reservation',
           'ting_relation' => 'ting_relation',
-          'ting_sfx' => 0,
+          'ting_sfx' => 'ting_sfx',
         ),
       ),
       'type' => 'ding_entity_buttons_filtered',
@@ -98,11 +98,11 @@ function ding_item_viewer_field_default_fields_alter(&$data) {
   if (isset($data['ting_object-ting_object-ting_cover'])) {
     $data['ting_object-ting_object-ting_cover']['field_instance']['display']['ding_item_viewer_big'] = array(
       'label' => 'hidden',
-      'module' => 'ting_covers',
+      'module' => 'ding_item_viewer',
       'settings' => array(
         'image_style' => 'ding_item_viewer_image_big',
       ),
-      'type' => 'ting_cover_default',
+      'type' => 'ting_cover_ding_item_viewer',
       'weight' => '1',
     ); /* WAS: '' */
     $data['ting_object-ting_object-ting_cover']['field_instance']['display']['ding_item_viewer_small'] = array(
@@ -135,14 +135,6 @@ function ding_item_viewer_field_default_fields_alter(&$data) {
       'settings' => array(),
       'type' => 'hidden',
       'weight' => '35',
-    ); /* WAS: '' */
-  }
-  if (isset($data['ting_object-ting_object-ting_details_contributor'])) {
-    $data['ting_object-ting_object-ting_details_contributor']['field_instance']['display']['ding_item_viewer_big'] = array(
-      'label' => 'above',
-      'settings' => array(),
-      'type' => 'hidden',
-      'weight' => '37',
     ); /* WAS: '' */
   }
   if (isset($data['ting_object-ting_object-ting_details_description'])) {
@@ -220,15 +212,15 @@ function ding_item_viewer_field_default_fields_alter(&$data) {
     $data['ting_object-ting_object-ting_title']['field_instance']['display']['ding_item_viewer_big'] = array(
       'label' => 'hidden',
       'module' => 'ting',
+      'settings' => array(
+        'link_type' => 'none',
+      ),
       'type' => 'ting_title_default',
       'weight' => '0',
     ); /* WAS: '' */
     $data['ting_object-ting_object-ting_title']['field_instance']['display']['ding_item_viewer_small'] = array(
       'label' => 'hidden',
       'module' => 'ting',
-      'settings' => array(
-        'link_type' => 'none',
-      ),
       'type' => 'ting_title_default',
       'weight' => '1',
     ); /* WAS: '' */
@@ -238,29 +230,13 @@ function ding_item_viewer_field_default_fields_alter(&$data) {
       'label' => 'above',
       'settings' => array(),
       'type' => 'hidden',
-      'weight' => '16',
+      'weight' => '0',
     ); /* WAS: '' */
     $data['ting_object-ting_object-voxb_rating']['field_instance']['display']['ding_item_viewer_small'] = array(
       'label' => 'above',
       'settings' => array(),
       'type' => 'hidden',
-      'weight' => '15',
-    ); /* WAS: '' */
-  }
-  if (isset($data['ting_object-ting_object-voxb_review'])) {
-    $data['ting_object-ting_object-voxb_review']['field_instance']['display']['ding_item_viewer_big'] = array(
-      'label' => 'above',
-      'settings' => array(),
-      'type' => 'hidden',
-      'weight' => '17',
-    ); /* WAS: '' */
-  }
-  if (isset($data['ting_object-ting_object-voxb_tags'])) {
-    $data['ting_object-ting_object-voxb_tags']['field_instance']['display']['ding_item_viewer_big'] = array(
-      'label' => 'above',
-      'settings' => array(),
-      'type' => 'hidden',
-      'weight' => '18',
+      'weight' => 0,
     ); /* WAS: '' */
   }
 }
