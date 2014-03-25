@@ -99,8 +99,6 @@ function ding_item_viewer_theme($existing, $type, $theme, $path) {
     'template' => 'templates/ding_item_viewer.content',
   );
 
-  /// OLD themes.
-
   $hooks['ding_item_viewer_item'] = array(
     'variables' => array(),
     'template' => 'ding_item_viewer.item',
@@ -155,11 +153,10 @@ function ding_item_viewer_block_view($delta) {
           'ding_item_viewer' => array(
             'visible_items' => 6,
             'big_item_positon' => 3,
-          )
+          ),
         ),
         'setting'
       );
-
 
       $block['content'] = theme('ding_item_viewer_container');
       break;
@@ -171,36 +168,42 @@ function ding_item_viewer_block_view($delta) {
 /**
  * Get ting objects.
  *
- * @param $query
+ * @param string $query
  *   Search query string.
- * @param $count
+ * @param int $count
  *   Number of objects to search.
+ * @param bool $no_cover
+ *   FALSE if item must have cover.
+ * @param string $sort
+ *   Sorting order.
+ *
+ * @return array
+ *   Ting objects.
  */
 function ding_item_viewer_get_objects($query = '', $count = 0, $no_cover = FALSE, $sort = '') {
   $objects = array();
   $request = '(' . $query . ')';
   $page = 1;
 
-
   if (!empty($query) && !empty($count)) {
     module_load_include('client.inc', 'ting');
-    // Search with portions of 10 items
+    // Search with portions of 10 items.
     while ($result = ding_item_viewer_search_ting($request, $page++, 10, $sort)) {
-      // This query is out of results OR we have needed amount of items
+      // This query is out of results OR we have needed amount of items.
       if ($result->numTotalCollections == 0 || count($objects) == $count) {
         break;
       }
 
       foreach ($result->collections as $collection) {
-        // Whether we reached our item limit per query
+        // Whether we reached our item limit per query.
         if (count($objects) == $count) {
           break;
         }
 
-        foreach ($collection->reply->objects as $searchItem) {
+        foreach ($collection->reply->objects as $search_item) {
           // No cover for this item? Skip it!
           try {
-            $cover_exists = ding_item_viewer_check_cover($searchItem->localId);
+            $cover_exists = ding_item_viewer_check_cover($search_item->localId);
           }
           catch (Exception $e) {
             break;
@@ -210,7 +213,7 @@ function ding_item_viewer_get_objects($query = '', $count = 0, $no_cover = FALSE
             break;
           }
 
-          $objects[$searchItem->localId] = ding_entity_load($searchItem->id);
+          $objects[$search_item->localId] = ding_entity_load($search_item->id);
           break;
         }
       }
@@ -223,14 +226,17 @@ function ding_item_viewer_get_objects($query = '', $count = 0, $no_cover = FALSE
 /**
  * Perform ting search.
  *
- * @param $query
+ * @param string $query
  *   Searched query string.
- * @param $page
+ * @param int $page
  *   Requested results page.
- * @param $records
+ * @param int $records
  *   Number of records to fetch.
- * @return
- *   Ting search result object.
+ * @param string $sort
+ *   Sorting order.
+ *
+ * @return object|bool
+ *   Ting search result object or FALSE.
  */
 function ding_item_viewer_search_ting($query = '', $page = 1, $records = 10, $sort = '') {
   if (!empty($query)) {
@@ -253,7 +259,7 @@ function ding_item_viewer_search_ting($query = '', $page = 1, $records = 10, $so
 /**
  * Check for cover existence.
  *
- * @param $local_id
+ * @param string $local_id
  *   Ting item local id.
  *
  * @return bool
@@ -285,7 +291,7 @@ function ding_item_viewer_check_cover($local_id) {
 /**
  * Create missed covers.
  *
- * @param $items
+ * @param array $items
  *   Set of ting objects.
  */
 function ding_item_viewer_create_missed_covers(&$items) {
@@ -304,11 +310,12 @@ function ding_item_viewer_create_missed_covers(&$items) {
 /**
  * Get images from ADDI web-service.
  *
- * @param $items
+ * @param array $items
  *   Set of ting objects.
- * @param $missing_images_local_ids
+ * @param array $missing_images_local_ids
  *   Array of ting items id's with missing covers.
- * @return
+ *
+ * @return array
  *   Set of ting objects, with image path attached.
  */
 function ding_item_viewer_get_images_from_addi(&$items, $missing_images_local_ids) {
@@ -324,7 +331,7 @@ function ding_item_viewer_get_images_from_addi(&$items, $missing_images_local_id
   }
 
   foreach ($missing_images_local_ids as $local_id) {
-    // Try to extract the image url from the result
+    // Try to extract the image url from the result.
     $source_url = FALSE;
     if (isset($additional_informations[$local_id]) && $ai = $additional_informations[$local_id]) {
       if ($ai->detailUrl) {
@@ -335,11 +342,11 @@ function ding_item_viewer_get_images_from_addi(&$items, $missing_images_local_id
       }
     }
 
-    // Try to download the image locally
+    // Try to download the image locally.
     $file = _ting_covers_pages_fetch_image(ting_covers_object_path($local_id), $source_url);
 
     if ($file) {
-      //Generate a path corresponding to the downloaded image, styled
+      // Generate a path corresponding to the downloaded image, styled.
       $items[$local_id]->image = file_create_url($file);
     }
     else {
@@ -374,7 +381,8 @@ function ding_item_viewer_ding_item_cache() {
 
 /**
  * Format ISBN number.
- * Remove all spaces and dashes.
+ *
+ * Removes all spaces and dashes.
  *
  * @param string $isbn
  *   Unformated ISBN number.
@@ -400,7 +408,6 @@ function ding_item_viewer_cronapi($op, $function = NULL) {
   switch ($op) {
     case 'list':
       return array('ding_item_viewer_warm_cache' => 'Cache warmer');
-
     break;
 
     case 'rule':
@@ -684,6 +691,9 @@ function ding_item_viewer_field_load($entity_type, $entities, $field, $instances
   }
 }
 
+/**
+ * Build widget data.
+ */
 function ding_item_viewer_get_data() {
   if (variable_get(DING_ITEM_VIEWER_RESULT, FALSE)) {
     return 'BUSY';
@@ -722,7 +732,6 @@ function ding_item_viewer_build_tabs() {
   return theme('item_viewer_tabs', array('tabs' => $tabs));
 }
 
-
 /**
  * Build ting related data.
  *
@@ -747,7 +756,7 @@ function ding_item_viewer_build_data() {
       if (!$cache) {
         $objects = ding_item_viewer_get_objects($query['query'], $count, FALSE, $sort);
         $items = array();
-        foreach($objects as $item) {
+        foreach ($objects as $item) {
           $build = ting_object_view($item, 'ding_item_viewer_small');
           $small = drupal_render($build);
           $build = ting_object_view($item, 'ding_item_viewer_big');
