@@ -129,6 +129,14 @@ function ding_item_viewer_field_default_fields_alter(&$data) {
       'weight' => '21',
     ); /* WAS: '' */
   }
+  if (isset($data['ting_object-ting_object-ting_details_audience'])) {
+    $data['ting_object-ting_object-ting_details_audience']['field_instance']['display']['ding_item_viewer_big'] = array(
+      'label' => 'above',
+      'settings' => array(),
+      'type' => 'hidden',
+      'weight' => '0',
+    ); /* WAS: '' */
+  }
   if (isset($data['ting_object-ting_object-ting_details_classification'])) {
     $data['ting_object-ting_object-ting_details_classification']['field_instance']['display']['ding_item_viewer_big'] = array(
       'label' => 'above',

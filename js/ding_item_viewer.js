@@ -55,7 +55,6 @@
       for(id in items[tab]) {
         tabs[tab][i] = id;
         i++;
-        preload_images(items[tab][id]);
         ids.push(id);
       }
     }
@@ -123,6 +122,13 @@
 
       content.append(item);
     }
+
+    // Preload images for current tab.
+    for (i = 0; i < tabs[current_tab].length; i++) {
+      id = tabs[current_tab][i];
+      preload_images(items[current_tab][id]);
+    }
+
     // Add first/last classes.
     content.find(':first').addClass('first');
     content.find(':last').addClass('last');
