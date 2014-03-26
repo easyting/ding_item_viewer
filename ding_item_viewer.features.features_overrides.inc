@@ -109,6 +109,12 @@ function ding_item_viewer_features_override_default_overrides() {
     'type' => 'hidden',
     'weight' => '21',
   );
+  $overrides["field.ting_object-ting_object-ting_details_audience.field_instance|display|ding_item_viewer_big"] = array(
+    'label' => 'above',
+    'settings' => array(),
+    'type' => 'hidden',
+    'weight' => '0',
+  );
   $overrides["field.ting_object-ting_object-ting_details_classification.field_instance|display|ding_item_viewer_big"] = array(
     'label' => 'above',
     'settings' => array(),

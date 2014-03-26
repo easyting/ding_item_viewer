@@ -30,6 +30,7 @@ features[features_overrides][] = field.ting_object-ting_object-ting_cover.field_
 features[features_overrides][] = field.ting_object-ting_object-ting_cover.field_instance|display|ding_item_viewer_small
 features[features_overrides][] = field.ting_object-ting_object-ting_details_age.field_instance|display|ding_item_viewer_big
 features[features_overrides][] = field.ting_object-ting_object-ting_details_age.field_instance|display|ding_item_viewer_small
+features[features_overrides][] = field.ting_object-ting_object-ting_details_audience.field_instance|display|ding_item_viewer_big
 features[features_overrides][] = field.ting_object-ting_object-ting_details_classification.field_instance|display|ding_item_viewer_big
 features[features_overrides][] = field.ting_object-ting_object-ting_details_description.field_instance|display|ding_item_viewer_small
 features[features_overrides][] = field.ting_object-ting_object-ting_details_extent.field_instance|display|ding_item_viewer_big
