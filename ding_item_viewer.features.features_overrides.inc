@@ -30,9 +30,9 @@ function ding_item_viewer_features_override_default_overrides() {
     'settings' => array(
       'entity_action_active_buttons' => array(
         'ding_bookmark' => 0,
-        'ding_reservation' => 0,
+        'ding_reservation' => 'ding_reservation',
         'ting_relation' => 'ting_relation',
-        'ting_sfx' => 0,
+        'ting_sfx' => 'ting_sfx',
       ),
     ),
     'type' => 'ding_entity_buttons_filtered',
@@ -81,11 +81,11 @@ function ding_item_viewer_features_override_default_overrides() {
   );
   $overrides["field.ting_object-ting_object-ting_cover.field_instance|display|ding_item_viewer_big"] = array(
     'label' => 'hidden',
-    'module' => 'ting_covers',
+    'module' => 'ding_item_viewer',
     'settings' => array(
       'image_style' => 'ding_item_viewer_image_big',
     ),
-    'type' => 'ting_cover_default',
+    'type' => 'ting_cover_ding_item_viewer',
     'weight' => '1',
   );
   $overrides["field.ting_object-ting_object-ting_cover.field_instance|display|ding_item_viewer_small"] = array(
@@ -109,17 +109,17 @@ function ding_item_viewer_features_override_default_overrides() {
     'type' => 'hidden',
     'weight' => '21',
   );
+  $overrides["field.ting_object-ting_object-ting_details_audience.field_instance|display|ding_item_viewer_big"] = array(
+    'label' => 'above',
+    'settings' => array(),
+    'type' => 'hidden',
+    'weight' => '0',
+  );
   $overrides["field.ting_object-ting_object-ting_details_classification.field_instance|display|ding_item_viewer_big"] = array(
     'label' => 'above',
     'settings' => array(),
     'type' => 'hidden',
     'weight' => '35',
-  );
-  $overrides["field.ting_object-ting_object-ting_details_contributor.field_instance|display|ding_item_viewer_big"] = array(
-    'label' => 'above',
-    'settings' => array(),
-    'type' => 'hidden',
-    'weight' => '37',
   );
   $overrides["field.ting_object-ting_object-ting_details_description.field_instance|display|ding_item_viewer_small"] = array(
     'label' => 'above',
@@ -179,15 +179,15 @@ function ding_item_viewer_features_override_default_overrides() {
   $overrides["field.ting_object-ting_object-ting_title.field_instance|display|ding_item_viewer_big"] = array(
     'label' => 'hidden',
     'module' => 'ting',
+    'settings' => array(
+      'link_type' => 'none',
+    ),
     'type' => 'ting_title_default',
     'weight' => '0',
   );
   $overrides["field.ting_object-ting_object-ting_title.field_instance|display|ding_item_viewer_small"] = array(
     'label' => 'hidden',
     'module' => 'ting',
-    'settings' => array(
-      'link_type' => 'none',
-    ),
     'type' => 'ting_title_default',
     'weight' => '1',
   );
@@ -195,25 +195,13 @@ function ding_item_viewer_features_override_default_overrides() {
     'label' => 'above',
     'settings' => array(),
     'type' => 'hidden',
-    'weight' => '16',
+    'weight' => '0',
   );
   $overrides["field.ting_object-ting_object-voxb_rating.field_instance|display|ding_item_viewer_small"] = array(
     'label' => 'above',
     'settings' => array(),
     'type' => 'hidden',
-    'weight' => '15',
-  );
-  $overrides["field.ting_object-ting_object-voxb_review.field_instance|display|ding_item_viewer_big"] = array(
-    'label' => 'above',
-    'settings' => array(),
-    'type' => 'hidden',
-    'weight' => '17',
-  );
-  $overrides["field.ting_object-ting_object-voxb_tags.field_instance|display|ding_item_viewer_big"] = array(
-    'label' => 'above',
-    'settings' => array(),
-    'type' => 'hidden',
-    'weight' => '18',
+    'weight' => 0,
   );
 
  return $overrides;

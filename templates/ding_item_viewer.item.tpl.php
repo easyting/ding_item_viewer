@@ -1,7 +1,6 @@
 <?php
 /**
  * @file
- *
  * Template for ding item viewer item.
  *
  * Variables:
@@ -12,9 +11,9 @@
 // Hide VoxB on item using CSS when this item does not have ISBN.
 // The structure is needed for other items.
 $voxb_class = ' hidden';
-if ($item->has_rating) {
+if ($item->has_rating):
   $voxb_class = '';
-}
+endif;
 ?>
 <div class="browsebar-item <?php echo $item_class; ?>">
   <div class="image-rating-wrapper">
