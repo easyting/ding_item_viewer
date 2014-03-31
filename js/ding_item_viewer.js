@@ -5,14 +5,19 @@
     tabs = [],// index => object_id mapping.
     items = [],// Items received from server.
     current_tab = 0,
-    starting_item = 0;
+    starting_item = 0,
+    wait_time = 1000; // Time interval when to try to fetch data in ms.
 
   $(document).ready(function(){
     // Load data from server.
     container = $('.ding-item-viewer');
-    $.get(container.data('url'), container_callback);
     $('a.tab', container).live('click', tab_change);
+    fetch_data();
   });
+
+  function fetch_data() {
+    $.get(container.data('url'), container_callback);
+  }
 
   /**
    * AJAX success callback function.
@@ -20,7 +25,12 @@
    * @see jQuery.get()
    */
   function container_callback(response, textStatus, jqXHR) {
-    if (response.status == 'OK') {
+    if (response.status == 'BUSY') {
+      setTimeout(fetch_data, wait_time);
+      // Increase interval between retries. Reduce server load.
+      wait_time *= 1.5;
+    }
+    else if (response.status == 'OK') {
       container.html(response.data.content);
       container.append(response.data.tabs);
       items = response.data.items;
@@ -37,7 +47,7 @@
    * Prepare data before viewing it.
    */
   function prepare_data() {
-    var tab, i, id;
+    var tab, i, id, ids = [];
     // Build index => object_id mapping for quick access (DingItemViewer.tabs).
     for(tab = 0; tab < items.length; tab++) {
       tabs[tab] = [];
@@ -45,10 +55,16 @@
       for(id in items[tab]) {
         tabs[tab][i] = id;
         i++;
+        ids.push(id);
       }
     }
     // Get settings.
     settings = Drupal.settings.ding_item_viewer;
+
+    // Get reservation buttons.
+    if (typeof(DingAvailability.process) != 'undefined') {
+      DingAvailability.process('availability', ids, function(){});
+    }
 
     // Get item container.
     content = container.find('.browsebar-items-wrapper');
@@ -72,6 +88,16 @@
       if (i == settings.big_item_positon) {
         item = $(items[current_tab][id].big);
         item.addClass('active');
+
+        // Show reservation button. Dirty hack.
+        if (typeof(DingAvailability.availability_cache[id]) != 'undefined') {
+          var reservation = item.find('.reservation-link-ajax');
+          if (reservation) {
+            if (DingAvailability.availability_cache[id].show_reservation_button) {
+              reservation.removeClass('hidden');
+            }
+          }
+        }
       }
       // "Small" items.
       else {
@@ -96,12 +122,16 @@
 
       content.append(item);
     }
+
+    // Preload images for current tab.
+    for (i = 0; i < tabs[current_tab].length; i++) {
+      id = tabs[current_tab][i];
+      preload_images(items[current_tab][id]);
+    }
+
     // Add first/last classes.
     content.find(':first').addClass('first');
     content.find(':last').addClass('last');
-
-    // @todo Get rid of AJAX image fetching.
-    Drupal.attachBehaviors(content);
   }
 
   /**
@@ -139,6 +169,19 @@
     current_tab = $(this).data('tab');
 
     show_items();
+  }
+
+  function preload_images(item) {
+    var $item, src, img;
+    $item = $(item.big);
+    src = $item.find('img').attr('src');
+    img = new Image();
+    img.src = src;
+
+    $item = $(item.small);
+    src = $item.find('img').attr('src');
+    img = new Image();
+    img.src = src;
   }
 })(jQuery);
 

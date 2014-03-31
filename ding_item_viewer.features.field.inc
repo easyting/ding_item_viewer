@@ -39,7 +39,6 @@ function ding_item_viewer_field_default_fields() {
     'field_instance' => array(
       'bundle' => 'ting_object',
       'default_value' => NULL,
-      'default_value_function' => 'ding_item_viewer_field_text',
       'deleted' => '0',
       'description' => '',
       'display' => array(
@@ -60,7 +59,7 @@ function ding_item_viewer_field_default_fields() {
           'module' => 'ding_item_viewer',
           'settings' => array(),
           'type' => 'ting_object_more_info_default',
-          'weight' => 43,
+          'weight' => 42,
         ),
         'ding_item_viewer_big' => array(
           'label' => 'hidden',
@@ -70,6 +69,12 @@ function ding_item_viewer_field_default_fields() {
           'weight' => '37',
         ),
         'ding_item_viewer_small' => array(
+          'label' => 'above',
+          'settings' => array(),
+          'type' => 'hidden',
+          'weight' => 0,
+        ),
+        'item_list' => array(
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
@@ -114,7 +119,7 @@ function ding_item_viewer_field_default_fields() {
         'module' => 'virtual_field',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 42,
+        'weight' => 41,
       ),
     ),
   );
