@@ -581,7 +581,7 @@ function ding_item_viewer_field_formatter_settings_summary($field, $instance, $v
   $summary = '';
 
   if ($display['type'] == 'ting_title_ding_item_viewer') {
-    $summary .= t('Link type: @type', array('@type' => $settings['link_type']));
+    $summary = t('Link type: @type', array('@type' => $settings['link_type']));
   }
 
   if ($display['type'] == 'ting_abstract_ding_item_viewer') {

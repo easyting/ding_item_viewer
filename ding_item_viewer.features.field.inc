@@ -72,7 +72,7 @@ function ding_item_viewer_field_default_fields() {
           'label' => 'above',
           'settings' => array(),
           'type' => 'hidden',
-          'weight' => 0,
+          'weight' => '0',
         ),
         'item_list' => array(
           'label' => 'above',

@@ -29,7 +29,7 @@ function ding_item_viewer_field_default_fields_alter(&$data) {
       'label' => 'above',
       'settings' => array(),
       'type' => 'hidden',
-      'weight' => 0,
+      'weight' => '0',
     ); /* WAS: '' */
   }
   if (isset($data['ting_object-ting_object-ding_entity_buttons'])) {
@@ -67,7 +67,7 @@ function ding_item_viewer_field_default_fields_alter(&$data) {
       'label' => 'hidden',
       'module' => 'ding_item_viewer',
       'settings' => array(
-        'trim_length' => '400',
+        'trim_length' => '300',
       ),
       'type' => 'ting_abstract_ding_item_viewer',
       'weight' => '35',
@@ -219,17 +219,20 @@ function ding_item_viewer_field_default_fields_alter(&$data) {
   if (isset($data['ting_object-ting_object-ting_title'])) {
     $data['ting_object-ting_object-ting_title']['field_instance']['display']['ding_item_viewer_big'] = array(
       'label' => 'hidden',
-      'module' => 'ting',
+      'module' => 'ding_item_viewer',
       'settings' => array(
-        'link_type' => 'none',
+        'link_type' => 'object',
       ),
-      'type' => 'ting_title_default',
+      'type' => 'ting_title_ding_item_viewer',
       'weight' => '0',
     ); /* WAS: '' */
     $data['ting_object-ting_object-ting_title']['field_instance']['display']['ding_item_viewer_small'] = array(
       'label' => 'hidden',
-      'module' => 'ting',
-      'type' => 'ting_title_default',
+      'module' => 'ding_item_viewer',
+      'settings' => array(
+        'link_type' => 'none',
+      ),
+      'type' => 'ting_title_ding_item_viewer',
       'weight' => '1',
     ); /* WAS: '' */
   }
