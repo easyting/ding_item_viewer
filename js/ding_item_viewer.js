@@ -34,6 +34,7 @@
       container.html(response.data.content);
       container.append(response.data.tabs);
       items = response.data.items;
+      container.find('.ui-tabs-nav li:first').addClass('active');
 
       prepare_data();
       show_items();
@@ -167,6 +168,8 @@
 
     starting_item = 0;
     current_tab = $(this).data('tab');
+    container.find('.ui-tabs-nav li').removeClass('active');
+    $(this).parent().addClass('active');
 
     show_items();
   }

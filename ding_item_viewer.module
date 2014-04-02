@@ -473,6 +473,15 @@ function ding_item_viewer_entity_info_alter(&$entity_info) {
 function ding_item_viewer_field_formatter_info() {
   $formatters = array();
 
+
+  $formatters['ting_title_ding_item_viewer'] = array(
+    'label' => t('Ding item viewer'),
+    'description' => t('Show title (truncates if it is too long)'),
+    'field types' => array(
+      'ting_title',
+    ),
+  );
+
   $formatters['ting_author_ding_item_viewer'] = array(
     'label' => t('Ding item viewer'),
     'description' => t('Show authors as plain text (without links)'),
@@ -525,6 +534,19 @@ function ding_item_viewer_field_formatter_settings_form($field, $instance, $view
 
   $element = array();
 
+  if ($display['type'] == 'ting_title_ding_item_viewer') {
+    $element['link_type'] = array(
+      '#type' => 'radios',
+      '#title' => t('Link title to'),
+      '#options' => array(
+        'none' => t("Don't link"),
+        'object' => t('Object'),
+        'collection' => t('Collection, if part of a collection'),
+      ),
+      '#default_value' => $settings['link_type'],
+    );
+  }
+
   if ($display['type'] == 'ting_abstract_ding_item_viewer') {
     $element['trim_length'] = array(
       '#title' => t('Trim length'),
@@ -558,6 +580,10 @@ function ding_item_viewer_field_formatter_settings_summary($field, $instance, $v
 
   $summary = '';
 
+  if ($display['type'] == 'ting_title_ding_item_viewer') {
+    $summary .= t('Link type: @type', array('@type' => $settings['link_type']));
+  }
+
   if ($display['type'] == 'ting_abstract_ding_item_viewer') {
     $summary = t('Trim length') . ': ' . $settings['trim_length'];
   }
@@ -581,6 +607,32 @@ function ding_item_viewer_field_formatter_view($entity_type, $entity, $field, $i
 
   foreach ($items as $delta => $item) {
     switch ($display['type']) {
+      case 'ting_title_ding_item_viewer':
+        $type = 'ting_object';
+        $title = $entity->title;
+        // Truncate title.
+        if (strlen($title) > 50) {
+          $title = substr($title, 0, 50) . '...';
+        }
+
+        if ($display['settings']['link_type'] == 'collection') {
+          $type = 'ting_collection';
+        }
+        if ($display['settings']['link_type'] != 'none') {
+          $url = entity_uri($type, $entity);
+          $title = l($title, $url['path'], $url['options']);
+        }
+        else {
+          $title = check_plain($title);
+        }
+
+        $element[$delta] = array(
+          '#prefix' => '<h2>',
+          '#suffix' => '</h2>',
+          '#markup' => $title,
+        );
+        break;
+
       // Use same logic as for default view, but without adding URLs.
       case 'ting_author_ding_item_viewer':
         $creator = NULL;
@@ -596,6 +648,9 @@ function ding_item_viewer_field_formatter_view($entity_type, $entity, $field, $i
           }
         }
 
+        if (!empty($creator) && !empty($entity->date)) {
+          $creator .= ' (' . $entity->date . ')';
+        }
         $element[$delta] = array('#markup' => $creator);
         break;
 
