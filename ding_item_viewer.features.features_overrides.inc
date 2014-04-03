@@ -54,7 +54,7 @@ function ding_item_viewer_features_override_default_overrides() {
     'label' => 'hidden',
     'module' => 'ding_item_viewer',
     'settings' => array(
-      'trim_length' => '300',
+      'trim_length' => '250',
     ),
     'type' => 'ting_abstract_ding_item_viewer',
     'weight' => '35',

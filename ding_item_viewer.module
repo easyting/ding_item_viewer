@@ -480,6 +480,7 @@ function ding_item_viewer_field_formatter_info() {
     'field types' => array(
       'ting_title',
     ),
+    'settings' => array('link_type' => 'none'),
   );
 
   $formatters['ting_author_ding_item_viewer'] = array(
@@ -615,10 +616,11 @@ function ding_item_viewer_field_formatter_view($entity_type, $entity, $field, $i
           $title = substr($title, 0, 50) . '...';
         }
 
-        if ($display['settings']['link_type'] == 'collection') {
+        if (!empty($display['settings']['link_type']) && $display['settings']['link_type'] == 'collection') {
           $type = 'ting_collection';
         }
-        if ($display['settings']['link_type'] != 'none') {
+
+        if (!empty($display['settings']['link_type']) && $display['settings']['link_type'] != 'none') {
           $url = entity_uri($type, $entity);
           $title = l($title, $url['path'], $url['options']);
         }

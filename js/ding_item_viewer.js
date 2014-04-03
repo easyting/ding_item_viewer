@@ -80,13 +80,19 @@
     // Reset content.
     content.html('');
 
+    var visible = Math.min(settings.visible_items, tabs[current_tab].length);
+    var big_item_positon = settings.big_item_positon;
+    if (visible < settings.visible_items) {
+      big_item_positon = Math.floor(visible / 2);
+    }
+
     // Show specified number of items on screen.
-    for (i = 0; i < settings.visible_items; i++) {
+    for (i = 0; i < visible; i++) {
       index = (i + starting_item) % tabs[current_tab].length;
       id = tabs[current_tab][index];
 
       // "Big" item.
-      if (i == settings.big_item_positon) {
+      if (i == big_item_positon) {
         item = $(items[current_tab][id].big);
         item.addClass('active');
 
@@ -147,7 +153,13 @@
       rotation; // Shift and direction of rotation.
 
     // Recalculate starting_item index and redraw content.
-    rotation = position - settings.big_item_positon;
+    var visible = Math.min(settings.visible_items, tabs[current_tab].length);
+    var big_item_positon = settings.big_item_positon;
+    if (visible < settings.visible_items) {
+      big_item_positon = Math.floor(visible / 2);
+    }
+
+    rotation = position - big_item_positon;
     starting_item = starting_item + rotation;
     // For negative value start from the tail of list.
     if (starting_item < 0) {
