@@ -294,6 +294,7 @@
 .ding-item-viewer .browsebar-item.active .field-type-ting-cover {
   float: left;
   margin-right: 10px;
+  height: 100%;
 }
 
 .ding-item-viewer .browsebar-item.active .field-type-ting-author {
