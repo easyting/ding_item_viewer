@@ -331,6 +331,13 @@ function ding_item_viewer_search_submit($form, &$form_state) {
   // Clear all item list cache.
   module_invoke('ding_item_cache', 'clear_all');
 
+  // Clear all cache.
+  foreach ($searches as $query) {
+    $cid = ding_item_viewer_generate_cache_id($query['query']);
+    cache_clear_all($cid);
+  }
+  cache_clear_all(DING_ITEM_VIEWER_RESULT);
+
   // Make ting search requests.
   // browsebar_do_request();
 }
