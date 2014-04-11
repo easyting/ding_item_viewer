@@ -752,12 +752,14 @@ function ding_item_viewer_field_load($entity_type, $entities, $field, $instances
  * Build widget data.
  */
 function ding_item_viewer_get_data() {
-  if (variable_get(DING_ITEM_VIEWER_RESULT, FALSE)) {
+  $busy = variable_get(DING_ITEM_VIEWER_RESULT, FALSE);
+  if ($busy && $busy >= time()) {
     return 'BUSY';
   }
 
   watchdog('div_ajax', 'Started ding_item_viewer_get_data');
-  variable_set(DING_ITEM_VIEWER_RESULT, TRUE);
+  // Set busy flag for 5min.
+  variable_set(DING_ITEM_VIEWER_RESULT, time() + 300);
   $result = array(
     'tabs' => ding_item_viewer_build_tabs(),
     'content' => theme('item_viewer_content'),
@@ -850,6 +852,9 @@ function ding_item_viewer_flush_caches() {
  * AJAX handler.
  */
 function ding_item_viewer_ajax() {
+  // Continue running script if user refreshes the page.
+  ignore_user_abort(TRUE);
+
   $response = array(
     'status' => 'OK',
     'data' => array(),
@@ -869,6 +874,14 @@ function ding_item_viewer_ajax() {
   else {
     $response['data'] = $cache->data;
   }
+
+  // Do not cache ajax reply.
+  drupal_add_http_header(
+    'Cache-Control',
+    'no-cache, no-store, must-revalidate'
+  );
+  drupal_add_http_header('Pragma', 'no-cache');
+  drupal_add_http_header('Expires', 0);
 
   drupal_json_output($response);
 }
