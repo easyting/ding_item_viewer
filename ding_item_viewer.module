@@ -267,7 +267,7 @@ function ding_item_viewer_search_ting($query = '', $page = 1, $records = 10, $so
  */
 function ding_item_viewer_check_cover($local_id) {
   $cid = 'ding_item_viewer_cover-check-' . $local_id;
-  $cache = cache_get($cid);
+  $cache = cache_get($cid, 'cache_ding_item');
   $value = NULL;
 
   if (!$cache) {
@@ -279,7 +279,7 @@ function ding_item_viewer_check_cover($local_id) {
     );
     $cover = $service->getByFaustNumber($local_id);
     $value = isset($cover[$local_id]);
-    cache_set($cid, $value);
+    cache_set($cid, $value, 'cache_ding_item');
   }
   else {
     $value = $cache->data;
@@ -765,7 +765,7 @@ function ding_item_viewer_get_data() {
     'content' => theme('item_viewer_content'),
     'items' => ding_item_viewer_build_data(),
   );
-  cache_set(DING_ITEM_VIEWER_RESULT, $result);
+  cache_set(DING_ITEM_VIEWER_RESULT, $result, 'cache_ding_item');
   watchdog('div_ajax', 'Finished ding_item_viewer_get_data');
   variable_delete(DING_ITEM_VIEWER_RESULT);
   return $result;
@@ -810,7 +810,7 @@ function ding_item_viewer_build_data() {
     $tab = 0;
     foreach ($queries as $query) {
       $cid = ding_item_viewer_generate_cache_id($query['query']);
-      $cache = cache_get($cid);
+      $cache = cache_get($cid, 'cache_ding_item');
 
       if (!$cache) {
         $objects = ding_item_viewer_get_objects($query['query'], $count, FALSE, $sort);
@@ -827,7 +827,7 @@ function ding_item_viewer_build_data() {
         }
 
         // Cache rendered items.
-        cache_set($cid, $items, 'cache', REQUEST_TIME + $ttl);
+        cache_set($cid, $items, 'cache_ding_item', REQUEST_TIME + $ttl);
       }
       else {
         $items = $cache->data;
@@ -861,7 +861,7 @@ function ding_item_viewer_ajax() {
     'error' => '',
   );
 
-  $cache = cache_get(DING_ITEM_VIEWER_RESULT);
+  $cache = cache_get(DING_ITEM_VIEWER_RESULT, 'cache_ding_item');
   if (!$cache) {
     $result = ding_item_viewer_get_data();
     if ($result == 'BUSY') {
