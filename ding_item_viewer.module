@@ -455,6 +455,10 @@ function ding_item_viewer_cronapi($op, $function = NULL) {
  * Set special view modes for item viewer.
  */
 function ding_item_viewer_entity_info_alter(&$entity_info) {
+  if (!isset($entity_info['ting_object'])) {
+    return;
+  }
+
   $entity_info['ting_object']['view modes'] += array(
     'ding_item_viewer_small' => array(
       'label' => t('Ding item viewer (small)'),
