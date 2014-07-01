@@ -803,7 +803,11 @@ function ding_item_viewer_build_tabs() {
  */
 function ding_item_viewer_build_data() {
   $queries = variable_get('ding_item_viewer_search_queries');
-  $count = variable_get('ding_item_viewer_item_limit', 24);
+  $count = variable_get('ding_item_viewer_item_limit', 18);
+  // Clamp the value to 18.
+  if ($count > 18) {
+    $count = 18;
+  }
   $sort = variable_get('ding_item_viewer_item_sorting', '');
   // Cache time in hours.
   $ttl = variable_get('ding_item_viewer_cache_ttl', 0) * 3600;
