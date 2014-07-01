@@ -120,10 +120,11 @@ function ding_item_viewer_admin_form($form, &$form_state) {
   );
 
   $form['browsebar']['ding_item_viewer_item_limit'] = array(
-    '#type' => 'textfield',
+    '#type' => 'select',
     '#title' => t('Item limit'),
+    '#options' => array_combine(range(6, 18, 6), range(6, 18, 6)),
     '#description' => t('The number of items to be returned in search result.'),
-    '#default_value' => variable_get('ding_item_viewer_item_limit', 24),
+    '#default_value' => variable_get('ding_item_viewer_item_limit', 18),
   );
 
   $form['browsebar']['ding_item_viewer_item_sorting'] = array(
@@ -346,11 +347,7 @@ function ding_item_viewer_search_submit($form, &$form_state) {
  * Validate settings submission.
  */
 function ding_item_viewer_admin_form_validate($form, &$form_state) {
-  $limit = $form_state['values']['ding_item_viewer_item_limit'];
   $cache_ttl = $form_state['values']['ding_item_viewer_cache_ttl'];
-  if (!is_numeric($limit)) {
-    form_set_error('ding_item_viewer_item_limit', t('Please enter a valid number.'));
-  }
 
   if (!is_numeric($cache_ttl)) {
     form_set_error('ding_item_viewer_cache_ttl', t('Please enter a valid number.'));
