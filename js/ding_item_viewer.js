@@ -25,12 +25,12 @@
    * @see jQuery.get()
    */
   function container_callback(response, textStatus, jqXHR) {
-    if (response.status == 'BUSY') {
+    if (response.status === 'BUSY') {
       setTimeout(fetch_data, wait_time);
       // Increase interval between retries. Reduce server load.
       wait_time *= 1.5;
     }
-    else if (response.status == 'OK') {
+    else if (response.status === 'OK') {
       container.html(response.data.content);
       container.append(response.data.tabs);
       items = response.data.items;
@@ -63,7 +63,7 @@
     settings = Drupal.settings.ding_item_viewer;
 
     // Get reservation buttons.
-    if (typeof(DingAvailability.process) != 'undefined') {
+    if (typeof(DingAvailability.process) !== 'undefined') {
       DingAvailability.process('availability', ids, function(){});
     }
 
@@ -92,12 +92,12 @@
       id = tabs[current_tab][index];
 
       // "Big" item.
-      if (i == big_item_positon) {
+      if (i === big_item_positon) {
         item = $(items[current_tab][id].big);
         item.addClass('active');
 
         // Show reservation button. Dirty hack.
-        if (typeof(DingAvailability.availability_cache[id]) != 'undefined') {
+        if (typeof(DingAvailability.availability_cache[id]) !== 'undefined') {
           var reservation = item.find('.reservation-link-ajax');
           if (reservation) {
             if (DingAvailability.availability_cache[id].show_reservation_button) {
@@ -110,7 +110,7 @@
       else {
         item = $(items[current_tab][id].small);
         // Add even/odd class for proper positioning.
-        if (i % 2 == 0) {
+        if (i % 2 === 0) {
           item.addClass('even');
         }
         else {
@@ -139,6 +139,17 @@
     // Add first/last classes.
     content.find(':first').addClass('first');
     content.find(':last').addClass('last');
+
+    var ajax_ele = content.find('.use-ajax');
+    new Drupal.ajax('.' + ajax_ele.parent().attr('id'), ajax_ele, {
+      url: ajax_ele.attr('href'),
+      effect: 'fade',
+      settings: {},
+      progress: {
+        type: 'throbber'
+      },
+      event: 'click tap'
+    });
   }
 
   /**
