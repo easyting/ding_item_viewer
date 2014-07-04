@@ -139,12 +139,7 @@ function ding_item_viewer_block_view($delta) {
       // Load required JS and CSS files.
       $mod_path = drupal_get_path('module', 'ding_item_viewer');
       drupal_add_css($mod_path . '/css/ding_item_viewer.styles.css');
-      drupal_add_library('system', 'drupal.ajax');
       drupal_add_js($mod_path . '/js/ding_item_viewer.js');
-
-      // Other modules do not work without it.
-      drupal_add_library('system', 'drupal.ajax');
-      drupal_add_library('system', 'jquery.form');
       drupal_add_js(drupal_get_path('module', 'ding_availability') . '/js/ding_availability_lib.js');
       drupal_add_js(drupal_get_path('module', 'ding_reservation') . '/js/ding_reservation_scripts.js');
 
