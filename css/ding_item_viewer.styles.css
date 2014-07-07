@@ -297,6 +297,11 @@
   height: 100%;
 }
 
+.ding-item-viewer .browsebar-item.active .field-type-ting-cover img {
+  width: 160px;
+  height: auto;
+}
+
 .ding-item-viewer .browsebar-item.active .field-type-ting-author {
   color: #53514b;
   display: block;
